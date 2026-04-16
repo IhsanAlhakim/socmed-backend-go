@@ -13,6 +13,16 @@ func newApp() *application {
 	return &application{}
 }
 
+func (app *application) mount() http.Handler {
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("OK"))
+	})
+
+	return mux
+}
+
 func (app *application) run(mux http.Handler) error {
 	server := &http.Server{
 		Addr:         ":8080",
