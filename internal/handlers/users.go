@@ -1,0 +1,44 @@
+package handlers
+
+import (
+	"log"
+	"net/http"
+
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/httpjson"
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/services"
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/store"
+)
+
+type UserHandler struct {
+	service services.UserService
+}
+
+func NewUserHandler(service services.UserService) *UserHandler {
+	return &UserHandler{
+		service: service,
+	}
+}
+
+func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
+	var user store.User
+	if err := httpjson.Decode(r, &user); err != nil {
+		log.Println(err)
+		if err == httpjson.ErrEmptyBody {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	err := h.service.CreateUser(user)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	httpjson.Respond(w, httpjson.ResponseBody{
+		Message: "User Created!",
+	}, http.StatusCreated)
+}
