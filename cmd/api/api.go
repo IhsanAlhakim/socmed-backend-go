@@ -34,6 +34,7 @@ func (app *application) mount() http.Handler {
 	userHandler := handlers.NewUserHandler(*userService)
 	mux.HandleFunc("POST /users", userHandler.CreateUser)
 	mux.HandleFunc("PUT /users", userHandler.UpdateUser)
+	mux.HandleFunc("DELETE /users/{id}", userHandler.DeleteUser)
 
 	return mux
 }
