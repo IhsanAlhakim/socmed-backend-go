@@ -42,3 +42,27 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		Message: "User Created!",
 	}, http.StatusCreated)
 }
+
+func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	var updatedUser store.User
+	if err := httpjson.Decode(r, &updatedUser); err != nil {
+		log.Println(err)
+		if err == httpjson.ErrEmptyBody {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	err := h.service.UpdateUser(updatedUser)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	httpjson.Respond(w, httpjson.ResponseBody{
+		Message: "User Updated!",
+	}, http.StatusOK)
+}
