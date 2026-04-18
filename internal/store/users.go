@@ -31,3 +31,18 @@ func (pgs *UsersPostgresStore) Create(user *User) error {
 
 	return nil
 }
+
+func (pgs *UsersPostgresStore) Update(updatedUser *User) error {
+
+	query := `
+	UPDATE users 
+	SET username = $1, email = $2 
+	WHERE id = $3
+	`
+	_, err := pgs.db.Exec(query, updatedUser.Username, updatedUser.Email, updatedUser.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

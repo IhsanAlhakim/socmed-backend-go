@@ -5,6 +5,7 @@ import "database/sql"
 type Storage struct {
 	Users interface {
 		Create(userData *User) error
+		Update(userData *User) error
 	}
 }
 
