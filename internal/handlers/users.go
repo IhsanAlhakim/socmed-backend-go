@@ -3,6 +3,7 @@ package handlers
 import (
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/httpjson"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/services"
@@ -64,5 +65,26 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	httpjson.Respond(w, httpjson.ResponseBody{
 		Message: "User Updated!",
+	}, http.StatusOK)
+}
+
+func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
+	userId := r.PathValue("id")
+	userIdInt, err := strconv.Atoi(userId)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = h.service.DeleteUser(int64(userIdInt))
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	httpjson.Respond(w, httpjson.ResponseBody{
+		Message: "User Deleted!",
 	}, http.StatusOK)
 }
