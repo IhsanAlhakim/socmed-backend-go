@@ -6,6 +6,7 @@ type Storage struct {
 	Users interface {
 		Create(userData *User) error
 		Update(userData *User) error
+		Delete(userId int64) error
 	}
 }
 

@@ -46,3 +46,17 @@ func (pgs *UsersPostgresStore) Update(updatedUser *User) error {
 
 	return nil
 }
+
+func (pgs *UsersPostgresStore) Delete(userId int64) error {
+
+	query := `
+	DELETE FROM users 
+	WHERE id = $1
+	`
+	_, err := pgs.db.Exec(query, userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
