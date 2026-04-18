@@ -4,6 +4,7 @@ import "github.com/IhsanAlhakim/socmed-backend-go/internal/store"
 
 type UserServiceInterface interface {
 	CreateUser(userData store.User) error
+	UpdateUser(userData store.User) error
 }
 
 type UserService struct {
@@ -26,5 +27,13 @@ func (usvc *UserService) CreateUser(userdata store.User) error {
 		return err
 	}
 
+	return nil
+}
+
+func (usvc *UserService) UpdateUser(userdata store.User) error {
+	err := usvc.storage.Users.Update(&userdata)
+	if err != nil {
+		return err
+	}
 	return nil
 }
