@@ -20,6 +20,20 @@ func NewPostHandler(service services.PostService) *PostHandler {
 	}
 }
 
+func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
+
+	posts, err := h.service.GetPosts()
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	httpjson.Respond(w, httpjson.ResponseBody{
+		Data: posts,
+	}, http.StatusOK)
+}
+
 func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	var post store.Post
 	if err := httpjson.Decode(r, &post); err != nil {

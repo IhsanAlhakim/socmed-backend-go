@@ -6,6 +6,7 @@ import (
 
 type PostServiceInterface interface {
 	CreatePost(postData store.Post) error
+	GetPosts() ([]store.Post, error)
 }
 
 type PostService struct {
@@ -16,6 +17,14 @@ func NewPostService(storage store.Storage) *PostService {
 	return &PostService{
 		storage: storage,
 	}
+}
+
+func (psvc *PostService) GetPosts() ([]store.Post, error) {
+	posts, err := psvc.storage.Posts.Get()
+	if err != nil {
+		return nil, err
+	}
+	return posts, nil
 }
 
 func (psvc *PostService) CreatePost(postData store.Post) error {

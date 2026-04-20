@@ -45,3 +45,33 @@ func (pgs *PostsPostgresStore) Delete(postId int64) error {
 
 	return nil
 }
+
+func (pgs *PostsPostgresStore) Get() ([]Post, error) {
+
+	query := `
+	SELECT id, title, user_id, content, created_at
+	FROM posts
+	`
+	rows, err := pgs.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []Post
+
+	for rows.Next() {
+		var each Post
+		err := rows.Scan(&each.ID, &each.Title, &each.UserId, &each.Content, &each.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, each)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
