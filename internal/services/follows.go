@@ -5,7 +5,7 @@ import (
 )
 
 type FollowServiceInterface interface {
-	CreateFollow(followData *store.Follow) error
+	Follow(followData *store.Follow) error
 }
 
 type FollowService struct {
@@ -18,7 +18,7 @@ func NewFollowService(storage store.Storage) *FollowService {
 	}
 }
 
-func (fsvc *FollowService) CreateFollow(followData *store.Follow) error {
+func (fsvc *FollowService) Follow(followData *store.Follow) error {
 	err := fsvc.storage.Follows.Create(followData)
 	if err != nil {
 		return err

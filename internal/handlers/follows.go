@@ -19,7 +19,7 @@ func NewFollowHandler(service services.FollowServiceInterface) *FollowHandler {
 	}
 }
 
-func (h *FollowHandler) CreateFollow(w http.ResponseWriter, r *http.Request) {
+func (h *FollowHandler) Follow(w http.ResponseWriter, r *http.Request) {
 	var followData store.Follow
 	if err := httpjson.Decode(r, &followData); err != nil {
 		log.Println(err)
@@ -31,7 +31,7 @@ func (h *FollowHandler) CreateFollow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.CreateFollow(&followData)
+	err := h.service.Follow(&followData)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
