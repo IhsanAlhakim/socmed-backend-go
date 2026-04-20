@@ -3,6 +3,7 @@ package handlers
 import (
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/httpjson"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/services"
@@ -41,4 +42,25 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	httpjson.Respond(w, httpjson.ResponseBody{
 		Message: "Post Created!",
 	}, http.StatusCreated)
+}
+
+func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
+	postId := r.PathValue("id")
+	postIdInt, err := strconv.Atoi(postId)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = h.service.DeletePost(int64(postIdInt))
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	httpjson.Respond(w, httpjson.ResponseBody{
+		Message: "Post Deleted!",
+	}, http.StatusOK)
 }

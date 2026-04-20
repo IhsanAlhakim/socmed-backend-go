@@ -10,6 +10,7 @@ type Storage struct {
 	}
 	Posts interface {
 		Create(postData *Post) error
+		Delete(postId int64) error
 	}
 }
 

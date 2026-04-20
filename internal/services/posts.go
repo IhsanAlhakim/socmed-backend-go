@@ -25,3 +25,11 @@ func (psvc *PostService) CreatePost(postData store.Post) error {
 	}
 	return nil
 }
+
+func (psvc *PostService) DeletePost(postId int64) error {
+	err := psvc.storage.Posts.Delete(postId)
+	if err != nil {
+		return err
+	}
+	return nil
+}

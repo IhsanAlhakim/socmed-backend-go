@@ -31,3 +31,17 @@ func (pgs *PostsPostgresStore) Create(post *Post) error {
 
 	return nil
 }
+
+func (pgs *PostsPostgresStore) Delete(postId int64) error {
+
+	query := `
+	DELETE FROM posts 
+	WHERE id = $1
+	`
+	_, err := pgs.db.Exec(query, postId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
