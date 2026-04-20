@@ -33,8 +33,8 @@ func (usvc *UserService) CreateUser(userdata store.User) error {
 	return nil
 }
 
-func (usvc *UserService) UpdateUser(userdata store.User) error {
-	err := usvc.storage.Users.Update(&userdata)
+func (usvc *UserService) UpdateUser(userId int64, userdata store.User) error {
+	err := usvc.storage.Users.Update(userId, &userdata)
 	if err != nil {
 		return err
 	}

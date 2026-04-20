@@ -33,7 +33,7 @@ func (app *application) mount() http.Handler {
 	userService := services.NewUserService(app.store)
 	userHandler := handlers.NewUserHandler(*userService)
 	mux.HandleFunc("POST /users", userHandler.CreateUser)
-	mux.HandleFunc("PUT /users", userHandler.UpdateUser)
+	mux.HandleFunc("PUT /users/{id}", userHandler.UpdateUser)
 	mux.HandleFunc("DELETE /users/{id}", userHandler.DeleteUser)
 
 	postService := services.NewPostService(app.store)

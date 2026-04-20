@@ -45,6 +45,9 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	userId := r.PathValue("id")
+	userIdInt, err := strconv.Atoi(userId)
+
 	var updatedUser store.User
 	if err := httpjson.Decode(r, &updatedUser); err != nil {
 		log.Println(err)
@@ -56,7 +59,7 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.UpdateUser(updatedUser)
+	err = h.service.UpdateUser(int64(userIdInt), updatedUser)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
