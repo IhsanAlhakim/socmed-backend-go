@@ -7,6 +7,7 @@ import (
 type PostServiceInterface interface {
 	CreatePost(postData store.Post) error
 	GetPosts() ([]store.Post, error)
+	GetPostById(postId int64) (store.Post, error)
 }
 
 type PostService struct {
@@ -23,6 +24,14 @@ func (psvc *PostService) GetPosts() ([]store.Post, error) {
 	posts, err := psvc.storage.Posts.Get()
 	if err != nil {
 		return nil, err
+	}
+	return posts, nil
+}
+
+func (psvc *PostService) GetPostById(postId int64) (store.Post, error) {
+	posts, err := psvc.storage.Posts.GetById(postId)
+	if err != nil {
+		return store.Post{}, err
 	}
 	return posts, nil
 }

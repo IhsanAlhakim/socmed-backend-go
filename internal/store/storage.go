@@ -12,6 +12,7 @@ type Storage struct {
 		Create(postData *Post) error
 		Delete(postId int64) error
 		Get() ([]Post, error)
+		GetById(postId int64) (Post, error)
 	}
 }
 

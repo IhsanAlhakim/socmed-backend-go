@@ -34,6 +34,28 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 	}, http.StatusOK)
 }
 
+func (h *PostHandler) GetPostById(w http.ResponseWriter, r *http.Request) {
+	postId := r.PathValue("id")
+
+	postIdInt, err := strconv.Atoi(postId)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	post, err := h.service.GetPostById(int64(postIdInt))
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	httpjson.Respond(w, httpjson.ResponseBody{
+		Data: post,
+	}, http.StatusOK)
+}
+
 func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	var post store.Post
 	if err := httpjson.Decode(r, &post); err != nil {

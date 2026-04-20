@@ -75,3 +75,21 @@ func (pgs *PostsPostgresStore) Get() ([]Post, error) {
 
 	return result, nil
 }
+
+func (pgs *PostsPostgresStore) GetById(postId int64) (Post, error) {
+
+	query := `
+	SELECT id, title, user_id, content, created_at
+	FROM posts
+	WHERE id = $1
+	`
+
+	var result Post
+
+	err := pgs.db.QueryRow(query, postId).Scan(&result.ID, &result.Title, &result.UserId, &result.Content, &result.CreatedAt)
+	if err != nil {
+		return Post{}, err
+	}
+
+	return result, nil
+}
