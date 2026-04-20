@@ -45,7 +45,8 @@ func (app *application) mount() http.Handler {
 
 	followService := services.NewFollowService(app.store)
 	followHandler := handlers.NewFollowHandler(followService)
-	mux.HandleFunc("POST /follow", followHandler.CreateFollow)
+	mux.HandleFunc("POST /follow", followHandler.Follow)
+	mux.HandleFunc("DELETE /follow", followHandler.Unfollow)
 
 	return mux
 }

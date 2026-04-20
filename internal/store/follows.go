@@ -26,3 +26,20 @@ func (pgs *FollowPostgresStore) Create(followData *Follow) error {
 
 	return nil
 }
+
+func (pgs *FollowPostgresStore) Delete(followData *Follow) error {
+	query := `
+	DELETE FROM follows
+	WHERE followed_id = $1
+	AND
+	follower_id = $2
+	`
+
+	_, err := pgs.db.Exec(query, followData.FollowedId, followData.FollowerId)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
