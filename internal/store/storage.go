@@ -14,11 +14,15 @@ type Storage struct {
 		Get() ([]Post, error)
 		GetById(postId int64) (Post, error)
 	}
+	Follows interface {
+		Create(followData *Follow) error
+	}
 }
 
 func NewStorage(db *sql.DB) *Storage {
 	return &Storage{
-		Users: &UsersPostgresStore{db: db},
-		Posts: &PostsPostgresStore{db: db},
+		Users:   &UsersPostgresStore{db: db},
+		Posts:   &PostsPostgresStore{db: db},
+		Follows: &FollowPostgresStore{db: db},
 	}
 }

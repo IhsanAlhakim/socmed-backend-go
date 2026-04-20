@@ -43,6 +43,10 @@ func (app *application) mount() http.Handler {
 	mux.HandleFunc("POST /posts", postHandler.CreatePost)
 	mux.HandleFunc("DELETE /posts/{id}", postHandler.DeletePost)
 
+	followService := services.NewFollowService(app.store)
+	followHandler := handlers.NewFollowHandler(followService)
+	mux.HandleFunc("POST /follow", followHandler.CreateFollow)
+
 	return mux
 }
 
