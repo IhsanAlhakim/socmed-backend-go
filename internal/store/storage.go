@@ -8,10 +8,14 @@ type Storage struct {
 		Update(userData *User) error
 		Delete(userId int64) error
 	}
+	Posts interface {
+		Create(postData *Post) error
+	}
 }
 
 func NewStorage(db *sql.DB) *Storage {
 	return &Storage{
 		Users: &UsersPostgresStore{db: db},
+		Posts: &PostsPostgresStore{db: db},
 	}
 }
