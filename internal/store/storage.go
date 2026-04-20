@@ -17,6 +17,7 @@ type Storage struct {
 	Follows interface {
 		Create(followData *Follow) error
 		Delete(followData *Follow) error
+		Get(followedId int64) ([]Follow, error)
 	}
 }
 

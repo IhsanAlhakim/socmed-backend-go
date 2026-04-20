@@ -3,6 +3,7 @@ package handlers
 import (
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/httpjson"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/services"
@@ -17,6 +18,27 @@ func NewFollowHandler(service services.FollowServiceInterface) *FollowHandler {
 	return &FollowHandler{
 		service: service,
 	}
+}
+
+func (h *FollowHandler) GetFollower(w http.ResponseWriter, r *http.Request) {
+	followedId := r.PathValue("followerId")
+	followedIdInt, err := strconv.Atoi(followedId)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	follower, err := h.service.GetFollower(int64(followedIdInt))
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	httpjson.Respond(w, httpjson.ResponseBody{
+		Data: follower,
+	}, http.StatusCreated)
 }
 
 func (h *FollowHandler) Follow(w http.ResponseWriter, r *http.Request) {
