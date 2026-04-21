@@ -19,11 +19,11 @@ type ServiceInterface interface {
 
 // struct
 type Post struct {
-	ID        int64     `json:"id"`
-	UserId    int64     `json:"user_id"`
-	Title     string    `json:"title"`
-	Content   string    `json:"content"`
-	CreatedAt time.Time `json:"created_at"`
+	ID        int64     `json:"id,omitempty"`
+	UserId    int64     `json:"user_id,omitempty"`
+	Title     string    `json:"title,omitempty"`
+	Content   string    `json:"content,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
 }
 
 type CreatePostParam struct {
