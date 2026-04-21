@@ -55,8 +55,8 @@ func (h *Handler) GetPostById(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
-	var post Post
-	if err := httpjson.Decode(r, &post); err != nil {
+	var postData CreatePostParam
+	if err := httpjson.Decode(r, &postData); err != nil {
 		log.Println(err)
 		if err == httpjson.ErrEmptyBody {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -66,7 +66,7 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.CreatePost(&post)
+	err := h.service.CreatePost(&postData)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
