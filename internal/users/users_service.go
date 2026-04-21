@@ -10,7 +10,7 @@ type Service struct {
 	store StoreInterface
 }
 
-func (svc *Service) CreateUser(userdata *User) error {
+func (svc *Service) CreateUser(userdata *CreateUserParam) error {
 	// input validation
 
 	// hash password

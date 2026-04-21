@@ -12,7 +12,7 @@ type PostgresStore struct {
 	db *sql.DB
 }
 
-func (pgs *PostgresStore) Create(user *User) error {
+func (pgs *PostgresStore) Create(user *CreateUserParam) error {
 	query := `
 	INSERT INTO users (username, password, email)
 	VALUES ($1, $2, $3)

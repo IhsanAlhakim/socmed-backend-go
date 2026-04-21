@@ -19,7 +19,7 @@ type Handler struct {
 }
 
 func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
-	var user User
+	var user CreateUserParam
 	if err := httpjson.Decode(r, &user); err != nil {
 		log.Println(err)
 		if err == httpjson.ErrEmptyBody {

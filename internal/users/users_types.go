@@ -6,13 +6,13 @@ import (
 
 // Interface
 type StoreInterface interface {
-	Create(userData *User) error
+	Create(userData *CreateUserParam) error
 	Update(userId int64, userData *User) error
 	Delete(userId int64) error
 }
 
 type ServiceInterface interface {
-	CreateUser(userData *User) error
+	CreateUser(userData *CreateUserParam) error
 	UpdateUser(userId int64, userData *User) error
 	DeleteUser(userId int64) error
 }
@@ -24,4 +24,10 @@ type User struct {
 	Email    string    `json:"email"`
 	Password string    `json:"password"`
 	CreateAt time.Time `json:"created_at"`
+}
+
+type CreateUserParam struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
