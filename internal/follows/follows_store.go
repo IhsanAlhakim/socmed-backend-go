@@ -1,18 +1,16 @@
-package store
+package follows
 
 import "database/sql"
 
-type Follow struct {
-	ID         int64 `json:"id"`
-	FollowedId int64 `json:"followed_id"`
-	FollowerId int64 `json:"follower_id"`
+func NewStore(db *sql.DB) StoreInterface {
+	return &PostgresStore{db: db}
 }
 
-type FollowPostgresStore struct {
+type PostgresStore struct {
 	db *sql.DB
 }
 
-func (pgs *FollowPostgresStore) Get(followedId int64) ([]Follow, error) {
+func (pgs *PostgresStore) Get(followedId int64) (*[]Follow, error) {
 	query := `
 	SELECT follower_id 
 	FROM follows
@@ -40,10 +38,10 @@ func (pgs *FollowPostgresStore) Get(followedId int64) ([]Follow, error) {
 		return nil, err
 	}
 
-	return result, nil
+	return &result, nil
 }
 
-func (pgs *FollowPostgresStore) Create(followData *Follow) error {
+func (pgs *PostgresStore) Create(followData *Follow) error {
 	query := `
 	INSERT INTO follows (followed_id, follower_id)
 	VALUES ($1, $2)
@@ -58,7 +56,7 @@ func (pgs *FollowPostgresStore) Create(followData *Follow) error {
 	return nil
 }
 
-func (pgs *FollowPostgresStore) Delete(followData *Follow) error {
+func (pgs *PostgresStore) Delete(followData *Follow) error {
 	query := `
 	DELETE FROM follows
 	WHERE followed_id = $1

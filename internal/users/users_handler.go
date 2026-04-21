@@ -1,4 +1,4 @@
-package handlers
+package users
 
 import (
 	"log"
@@ -6,22 +6,20 @@ import (
 	"strconv"
 
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/httpjson"
-	"github.com/IhsanAlhakim/socmed-backend-go/internal/services"
-	"github.com/IhsanAlhakim/socmed-backend-go/internal/store"
 )
 
-type UserHandler struct {
-	service services.UserService
-}
-
-func NewUserHandler(service services.UserService) *UserHandler {
-	return &UserHandler{
+func NewHandler(service ServiceInterface) *Handler {
+	return &Handler{
 		service: service,
 	}
 }
 
-func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
-	var user store.User
+type Handler struct {
+	service ServiceInterface
+}
+
+func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
+	var user User
 	if err := httpjson.Decode(r, &user); err != nil {
 		log.Println(err)
 		if err == httpjson.ErrEmptyBody {
@@ -32,7 +30,7 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.CreateUser(user)
+	err := h.service.CreateUser(&user)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -44,11 +42,11 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}, http.StatusCreated)
 }
 
-func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	userId := r.PathValue("id")
 	userIdInt, err := strconv.Atoi(userId)
 
-	var updatedUser store.User
+	var updatedUser User
 	if err := httpjson.Decode(r, &updatedUser); err != nil {
 		log.Println(err)
 		if err == httpjson.ErrEmptyBody {
@@ -59,7 +57,7 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.service.UpdateUser(int64(userIdInt), updatedUser)
+	err = h.service.UpdateUser(int64(userIdInt), &updatedUser)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -71,7 +69,7 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}, http.StatusOK)
 }
 
-func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	userId := r.PathValue("id")
 	userIdInt, err := strconv.Atoi(userId)
 	if err != nil {

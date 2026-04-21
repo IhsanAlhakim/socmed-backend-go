@@ -1,23 +1,18 @@
-package store
+package posts
 
 import (
 	"database/sql"
-	"time"
 )
 
-type Post struct {
-	ID        int64     `json:"id"`
-	UserId    int64     `json:"user_id"`
-	Title     string    `json:"title"`
-	Content   string    `json:"content"`
-	CreatedAt time.Time `json:"created_at"`
+func NewStore(db *sql.DB) StoreInterface {
+	return &PostgresStore{db: db}
 }
 
-type PostsPostgresStore struct {
+type PostgresStore struct {
 	db *sql.DB
 }
 
-func (pgs *PostsPostgresStore) Create(post *Post) error {
+func (pgs *PostgresStore) Create(post *Post) error {
 	query := `
 	INSERT INTO posts (user_id, title, content)
 	VALUES ($1, $2, $3)
@@ -32,7 +27,7 @@ func (pgs *PostsPostgresStore) Create(post *Post) error {
 	return nil
 }
 
-func (pgs *PostsPostgresStore) Delete(postId int64) error {
+func (pgs *PostgresStore) Delete(postId int64) error {
 
 	query := `
 	DELETE FROM posts 
@@ -46,7 +41,7 @@ func (pgs *PostsPostgresStore) Delete(postId int64) error {
 	return nil
 }
 
-func (pgs *PostsPostgresStore) Get() ([]Post, error) {
+func (pgs *PostgresStore) Get() (*[]Post, error) {
 
 	query := `
 	SELECT id, title, user_id, content, created_at
@@ -73,10 +68,10 @@ func (pgs *PostsPostgresStore) Get() ([]Post, error) {
 		return nil, err
 	}
 
-	return result, nil
+	return &result, nil
 }
 
-func (pgs *PostsPostgresStore) GetById(postId int64) (Post, error) {
+func (pgs *PostgresStore) GetById(postId int64) (*Post, error) {
 
 	query := `
 	SELECT id, title, user_id, content, created_at
@@ -88,8 +83,8 @@ func (pgs *PostsPostgresStore) GetById(postId int64) (Post, error) {
 
 	err := pgs.db.QueryRow(query, postId).Scan(&result.ID, &result.Title, &result.UserId, &result.Content, &result.CreatedAt)
 	if err != nil {
-		return Post{}, err
+		return &Post{}, err
 	}
 
-	return result, nil
+	return &result, nil
 }

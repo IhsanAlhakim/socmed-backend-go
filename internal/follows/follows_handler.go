@@ -1,4 +1,4 @@
-package handlers
+package follows
 
 import (
 	"log"
@@ -6,22 +6,20 @@ import (
 	"strconv"
 
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/httpjson"
-	"github.com/IhsanAlhakim/socmed-backend-go/internal/services"
-	"github.com/IhsanAlhakim/socmed-backend-go/internal/store"
 )
 
-type FollowHandler struct {
-	service services.FollowServiceInterface
-}
-
-func NewFollowHandler(service services.FollowServiceInterface) *FollowHandler {
-	return &FollowHandler{
+func NewHandler(service ServiceInterface) *Handler {
+	return &Handler{
 		service: service,
 	}
 }
 
-func (h *FollowHandler) GetFollower(w http.ResponseWriter, r *http.Request) {
-	followedId := r.PathValue("followerId")
+type Handler struct {
+	service ServiceInterface
+}
+
+func (h *Handler) GetFollower(w http.ResponseWriter, r *http.Request) {
+	followedId := r.PathValue("followedId")
 	followedIdInt, err := strconv.Atoi(followedId)
 	if err != nil {
 		log.Println(err)
@@ -38,11 +36,11 @@ func (h *FollowHandler) GetFollower(w http.ResponseWriter, r *http.Request) {
 
 	httpjson.Respond(w, httpjson.ResponseBody{
 		Data: follower,
-	}, http.StatusCreated)
+	}, http.StatusOK)
 }
 
-func (h *FollowHandler) Follow(w http.ResponseWriter, r *http.Request) {
-	var followData store.Follow
+func (h *Handler) Follow(w http.ResponseWriter, r *http.Request) {
+	var followData Follow
 	if err := httpjson.Decode(r, &followData); err != nil {
 		log.Println(err)
 		if err == httpjson.ErrEmptyBody {
@@ -65,8 +63,8 @@ func (h *FollowHandler) Follow(w http.ResponseWriter, r *http.Request) {
 	}, http.StatusCreated)
 }
 
-func (h *FollowHandler) Unfollow(w http.ResponseWriter, r *http.Request) {
-	var followData store.Follow
+func (h *Handler) Unfollow(w http.ResponseWriter, r *http.Request) {
+	var followData Follow
 	if err := httpjson.Decode(r, &followData); err != nil {
 		log.Println(err)
 		if err == httpjson.ErrEmptyBody {
@@ -86,5 +84,5 @@ func (h *FollowHandler) Unfollow(w http.ResponseWriter, r *http.Request) {
 
 	httpjson.Respond(w, httpjson.ResponseBody{
 		Message: "Follow Data Deleted!",
-	}, http.StatusCreated)
+	}, http.StatusOK)
 }

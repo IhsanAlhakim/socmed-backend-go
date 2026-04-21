@@ -5,7 +5,6 @@ import (
 
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/config"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/database"
-	"github.com/IhsanAlhakim/socmed-backend-go/internal/store"
 )
 
 func main() {
@@ -17,9 +16,7 @@ func main() {
 	}
 	defer db.Close()
 
-	storage := store.NewStorage(db)
-
-	app := newApp(*storage, *cfg)
+	app := newApp(db, cfg)
 
 	mux := app.mount()
 

@@ -1,4 +1,4 @@
-package handlers
+package posts
 
 import (
 	"log"
@@ -6,21 +6,19 @@ import (
 	"strconv"
 
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/httpjson"
-	"github.com/IhsanAlhakim/socmed-backend-go/internal/services"
-	"github.com/IhsanAlhakim/socmed-backend-go/internal/store"
 )
 
-type PostHandler struct {
-	service services.PostService
-}
-
-func NewPostHandler(service services.PostService) *PostHandler {
-	return &PostHandler{
+func NewHandler(service ServiceInterface) *Handler {
+	return &Handler{
 		service: service,
 	}
 }
 
-func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
+type Handler struct {
+	service ServiceInterface
+}
+
+func (h *Handler) GetPosts(w http.ResponseWriter, r *http.Request) {
 
 	posts, err := h.service.GetPosts()
 	if err != nil {
@@ -34,7 +32,7 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 	}, http.StatusOK)
 }
 
-func (h *PostHandler) GetPostById(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetPostById(w http.ResponseWriter, r *http.Request) {
 	postId := r.PathValue("id")
 
 	postIdInt, err := strconv.Atoi(postId)
@@ -56,8 +54,8 @@ func (h *PostHandler) GetPostById(w http.ResponseWriter, r *http.Request) {
 	}, http.StatusOK)
 }
 
-func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
-	var post store.Post
+func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
+	var post Post
 	if err := httpjson.Decode(r, &post); err != nil {
 		log.Println(err)
 		if err == httpjson.ErrEmptyBody {
@@ -68,7 +66,7 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.CreatePost(post)
+	err := h.service.CreatePost(&post)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -80,7 +78,7 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	}, http.StatusCreated)
 }
 
-func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) DeletePost(w http.ResponseWriter, r *http.Request) {
 	postId := r.PathValue("id")
 	postIdInt, err := strconv.Atoi(postId)
 	if err != nil {

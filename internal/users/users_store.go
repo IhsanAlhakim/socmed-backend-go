@@ -1,23 +1,18 @@
-package store
+package users
 
 import (
 	"database/sql"
-	"time"
 )
 
-type User struct {
-	ID       int64     `json:"id"`
-	Username string    `json:"username"`
-	Email    string    `json:"email"`
-	Password string    `json:"password"`
-	CreateAt time.Time `json:"created_at"`
+func NewStore(db *sql.DB) StoreInterface {
+	return &PostgresStore{db: db}
 }
 
-type UsersPostgresStore struct {
+type PostgresStore struct {
 	db *sql.DB
 }
 
-func (pgs *UsersPostgresStore) Create(user *User) error {
+func (pgs *PostgresStore) Create(user *User) error {
 	query := `
 	INSERT INTO users (username, password, email)
 	VALUES ($1, $2, $3)
@@ -32,7 +27,7 @@ func (pgs *UsersPostgresStore) Create(user *User) error {
 	return nil
 }
 
-func (pgs *UsersPostgresStore) Update(userId int64, updatedUser *User) error {
+func (pgs *PostgresStore) Update(userId int64, updatedUser *User) error {
 
 	query := `
 	UPDATE users 
@@ -47,7 +42,7 @@ func (pgs *UsersPostgresStore) Update(userId int64, updatedUser *User) error {
 	return nil
 }
 
-func (pgs *UsersPostgresStore) Delete(userId int64) error {
+func (pgs *PostgresStore) Delete(userId int64) error {
 
 	query := `
 	DELETE FROM users 
