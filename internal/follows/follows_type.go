@@ -7,13 +7,18 @@ type Follow struct {
 }
 
 type StoreInterface interface {
-	Create(followData *Follow) error
-	Delete(followData *Follow) error
+	Create(followData *FollowDataparam) error
+	Delete(followData *FollowDataparam) error
 	Get(followedId int64) (*[]Follow, error)
 }
 
 type ServiceInterface interface {
-	Follow(followData *Follow) error
-	Unfollow(followData *Follow) error
+	Follow(followData *FollowDataparam) error
+	Unfollow(followData *FollowDataparam) error
 	GetFollower(followedId int64) (*[]Follow, error)
+}
+
+type FollowDataparam struct {
+	FollowedId int64 `json:"followed_id"`
+	FollowerId int64 `json:"follower_id"`
 }

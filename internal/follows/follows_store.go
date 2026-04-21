@@ -41,7 +41,7 @@ func (pgs *PostgresStore) Get(followedId int64) (*[]Follow, error) {
 	return &result, nil
 }
 
-func (pgs *PostgresStore) Create(followData *Follow) error {
+func (pgs *PostgresStore) Create(followData *FollowDataparam) error {
 	query := `
 	INSERT INTO follows (followed_id, follower_id)
 	VALUES ($1, $2)
@@ -56,7 +56,7 @@ func (pgs *PostgresStore) Create(followData *Follow) error {
 	return nil
 }
 
-func (pgs *PostgresStore) Delete(followData *Follow) error {
+func (pgs *PostgresStore) Delete(followData *FollowDataparam) error {
 	query := `
 	DELETE FROM follows
 	WHERE followed_id = $1

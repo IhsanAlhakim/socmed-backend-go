@@ -40,7 +40,7 @@ func (h *Handler) GetFollower(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Follow(w http.ResponseWriter, r *http.Request) {
-	var followData Follow
+	var followData FollowDataparam
 	if err := httpjson.Decode(r, &followData); err != nil {
 		log.Println(err)
 		if err == httpjson.ErrEmptyBody {
@@ -64,7 +64,7 @@ func (h *Handler) Follow(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Unfollow(w http.ResponseWriter, r *http.Request) {
-	var followData Follow
+	var followData FollowDataparam
 	if err := httpjson.Decode(r, &followData); err != nil {
 		log.Println(err)
 		if err == httpjson.ErrEmptyBody {
