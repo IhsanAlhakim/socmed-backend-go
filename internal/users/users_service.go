@@ -23,8 +23,8 @@ func (svc *Service) CreateUser(userdata *CreateUserParam) error {
 	return nil
 }
 
-func (svc *Service) UpdateUser(userId int64, userdata *User) error {
-	err := svc.store.Update(userId, userdata)
+func (svc *Service) UpdateUser(userId int64, updatedUserData *UpdateUserParam) error {
+	err := svc.store.Update(userId, updatedUserData)
 	if err != nil {
 		return err
 	}

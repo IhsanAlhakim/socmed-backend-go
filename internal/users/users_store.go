@@ -27,14 +27,14 @@ func (pgs *PostgresStore) Create(user *CreateUserParam) error {
 	return nil
 }
 
-func (pgs *PostgresStore) Update(userId int64, updatedUser *User) error {
+func (pgs *PostgresStore) Update(userId int64, updatedUserData *UpdateUserParam) error {
 
 	query := `
 	UPDATE users 
 	SET username = $1, email = $2 
 	WHERE id = $3
 	`
-	_, err := pgs.db.Exec(query, updatedUser.Username, updatedUser.Email, userId)
+	_, err := pgs.db.Exec(query, updatedUserData.Username, updatedUserData.Email, userId)
 	if err != nil {
 		return err
 	}
