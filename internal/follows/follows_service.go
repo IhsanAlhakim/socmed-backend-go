@@ -11,7 +11,7 @@ type Service struct {
 }
 
 func (svc *Service) GetFollower(followedId int64) (*[]Follow, error) {
-	follower, err := svc.store.Get(followedId)
+	follower, err := svc.store.GetFollower(followedId)
 	if err != nil {
 		return nil, err
 	}

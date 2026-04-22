@@ -4,7 +4,7 @@ package follows
 type StoreInterface interface {
 	Create(followData *FollowDataparam) error
 	Delete(followData *FollowDataparam) error
-	Get(followedId int64) (*[]Follow, error)
+	GetFollower(followedId int64) (*[]Follow, error)
 }
 
 type ServiceInterface interface {
@@ -15,9 +15,11 @@ type ServiceInterface interface {
 
 // struct
 type Follow struct {
-	ID         int64 `json:"id,omitempty"`
-	FollowedId int64 `json:"followed_id,omitempty"`
-	FollowerId int64 `json:"follower_id,omitempty"`
+	ID           int64  `json:"id,omitempty"`
+	FollowedId   int64  `json:"followed_id,omitempty"`
+	FollowedName string `json:"followed_name,omitempty"`
+	FollowerId   int64  `json:"follower_id,omitempty"`
+	FollowerName string `json:"follower_name,omitempty"`
 }
 
 type FollowDataparam struct {

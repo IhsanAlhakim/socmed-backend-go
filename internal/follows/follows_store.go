@@ -10,10 +10,19 @@ type PostgresStore struct {
 	db *sql.DB
 }
 
-func (pgs *PostgresStore) Get(followedId int64) (*[]Follow, error) {
+func (pgs *PostgresStore) GetFollower(followedId int64) (*[]Follow, error) {
+	// query2 := `
+	// SELECT f.followed_id, u1.username as followed_name, f.follower_id, u2.username as follower_name
+	// FROM follows f
+	// JOIN users u1 ON f.followed_id = u1.id
+	// JOIN users u2 ON f.follower_id = u2.id
+	// WHERE followed_id = $1
+	// `
+
 	query := `
-	SELECT follower_id 
-	FROM follows
+	SELECT f.follower_id, u.username as follower_name
+	FROM follows f
+	JOIN users u ON f.follower_id = u.id
 	WHERE followed_id = $1
 	`
 
@@ -27,7 +36,7 @@ func (pgs *PostgresStore) Get(followedId int64) (*[]Follow, error) {
 
 	for rows.Next() {
 		var each Follow
-		err := rows.Scan(&each.FollowerId)
+		err := rows.Scan(&each.FollowerId, &each.FollowerName)
 		if err != nil {
 			return nil, err
 		}
