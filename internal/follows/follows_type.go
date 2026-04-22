@@ -5,12 +5,14 @@ type StoreInterface interface {
 	Create(followData *FollowDataparam) error
 	Delete(followData *FollowDataparam) error
 	GetFollower(followedId int64) (*[]Follow, error)
+	GetFollowed(followerId int64) (*[]Follow, error)
 }
 
 type ServiceInterface interface {
 	Follow(followData *FollowDataparam) error
 	Unfollow(followData *FollowDataparam) error
 	GetFollower(followedId int64) (*[]Follow, error)
+	GetFollowed(followerId int64) (*[]Follow, error)
 }
 
 // struct

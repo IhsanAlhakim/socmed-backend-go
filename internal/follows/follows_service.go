@@ -18,6 +18,14 @@ func (svc *Service) GetFollower(followedId int64) (*[]Follow, error) {
 	return follower, nil
 }
 
+func (svc *Service) GetFollowed(followerId int64) (*[]Follow, error) {
+	followed, err := svc.store.GetFollowed(followerId)
+	if err != nil {
+		return nil, err
+	}
+	return followed, nil
+}
+
 func (svc *Service) Follow(followData *FollowDataparam) error {
 	err := svc.store.Create(followData)
 	if err != nil {

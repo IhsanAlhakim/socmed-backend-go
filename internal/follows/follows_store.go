@@ -50,6 +50,39 @@ func (pgs *PostgresStore) GetFollower(followedId int64) (*[]Follow, error) {
 	return &result, nil
 }
 
+func (pgs *PostgresStore) GetFollowed(followerId int64) (*[]Follow, error) {
+
+	query := `
+	SELECT f.followed_id, u.username as followed_name
+	FROM follows f
+	JOIN users u ON f.followed_id = u.id
+	WHERE follower_id = $1
+	`
+
+	rows, err := pgs.db.Query(query, followerId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []Follow
+
+	for rows.Next() {
+		var each Follow
+		err := rows.Scan(&each.FollowedId, &each.FollowedName)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, each)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
 func (pgs *PostgresStore) Create(followData *FollowDataparam) error {
 	query := `
 	INSERT INTO follows (followed_id, follower_id)

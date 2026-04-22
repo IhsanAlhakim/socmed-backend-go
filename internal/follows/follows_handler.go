@@ -39,6 +39,27 @@ func (h *Handler) GetFollower(w http.ResponseWriter, r *http.Request) {
 	}, http.StatusOK)
 }
 
+func (h *Handler) GetFollowed(w http.ResponseWriter, r *http.Request) {
+	followerId := r.PathValue("followerId")
+	followerIdInt, err := strconv.Atoi(followerId)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	followed, err := h.service.GetFollowed(int64(followerIdInt))
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	httpjson.Respond(w, httpjson.ResponseBody{
+		Data: followed,
+	}, http.StatusOK)
+}
+
 func (h *Handler) Follow(w http.ResponseWriter, r *http.Request) {
 	var followData FollowDataparam
 	if err := httpjson.Decode(r, &followData); err != nil {
