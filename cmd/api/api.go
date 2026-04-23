@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/comments"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/config"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/follows"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/posts"
@@ -67,6 +68,11 @@ func (app *application) mount() http.Handler {
 	mux.HandleFunc("GET /follows/followed/{followerId}", followHandler.GetFollowed)
 	mux.HandleFunc("POST /follows", followHandler.Follow)
 	mux.HandleFunc("DELETE /follows", followHandler.Unfollow)
+
+	commentStore := comments.NewStore(app.db)
+	commentService := comments.NewService(commentStore)
+	commentHandler := comments.NewHandler(commentService)
+	mux.HandleFunc("POST /comments", commentHandler.CreateComment)
 
 	return mux
 }
