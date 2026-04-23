@@ -57,3 +57,18 @@ func (pgs *PostgresStore) Getcomments(postId int64) (*[]Comment, error) {
 
 	return &result, nil
 }
+
+func (pgs *PostgresStore) DeleteComment(commentId int64) error {
+	query := `
+	DELETE FROM comments
+	WHERE id = $1
+	`
+
+	_, err := pgs.db.Exec(query, commentId)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -63,3 +63,25 @@ func (h *Handler) Getcomments(w http.ResponseWriter, r *http.Request) {
 		Data: comments,
 	}, http.StatusOK)
 }
+
+func (h *Handler) DeleteComment(w http.ResponseWriter, r *http.Request) {
+	commentId := r.PathValue("commentId")
+
+	commentIdInt, err := strconv.Atoi(commentId)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = h.service.DeleteComment(int64(commentIdInt))
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	httpjson.Respond(w, httpjson.ResponseBody{
+		Message: "Comment Deleted",
+	}, http.StatusOK)
+}

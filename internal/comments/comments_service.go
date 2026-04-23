@@ -25,3 +25,11 @@ func (svc *Service) Getcomments(postId int64) (*[]Comment, error) {
 	}
 	return comments, nil
 }
+
+func (svc *Service) DeleteComment(commentId int64) error {
+	err := svc.store.DeleteComment(commentId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
