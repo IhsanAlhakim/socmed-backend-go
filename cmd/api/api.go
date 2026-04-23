@@ -73,6 +73,7 @@ func (app *application) mount() http.Handler {
 	commentService := comments.NewService(commentStore)
 	commentHandler := comments.NewHandler(commentService)
 	mux.HandleFunc("POST /comments", commentHandler.CreateComment)
+	mux.HandleFunc("GET /comments/{postId}", commentHandler.Getcomments)
 
 	return mux
 }

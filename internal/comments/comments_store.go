@@ -26,3 +26,34 @@ func (pgs *PostgresStore) CreateComment(commentData *CreateCommentParam) error {
 
 	return nil
 }
+
+func (pgs *PostgresStore) Getcomments(postId int64) (*[]Comment, error) {
+	query := `
+	SELECT c.id, u.username, c.content, c.created_at
+	FROM comments c
+	JOIN users u ON c.user_id = u.id
+	WHERE c.post_id = $1 
+	`
+	rows, err := pgs.db.Query(query, postId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []Comment
+
+	for rows.Next() {
+		var each Comment
+		err := rows.Scan(&each.ID, &each.Username, &each.Content, &each.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, each)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}

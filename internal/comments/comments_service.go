@@ -17,3 +17,11 @@ func (svc *Service) CreateComment(commentData *CreateCommentParam) error {
 	}
 	return nil
 }
+
+func (svc *Service) Getcomments(postId int64) (*[]Comment, error) {
+	comments, err := svc.store.Getcomments(postId)
+	if err != nil {
+		return nil, err
+	}
+	return comments, nil
+}
