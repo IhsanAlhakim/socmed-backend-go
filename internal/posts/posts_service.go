@@ -11,7 +11,7 @@ type Service struct {
 }
 
 func (svc *Service) GetPosts() (*[]Post, error) {
-	posts, err := svc.store.Get()
+	posts, err := svc.store.GetPosts()
 	if err != nil {
 		return nil, err
 	}

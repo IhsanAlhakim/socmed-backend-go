@@ -6,7 +6,7 @@ import "time"
 type StoreInterface interface {
 	Create(postData *CreatePostParam) error
 	Delete(postId int64) error
-	Get() (*[]Post, error)
+	GetPosts() (*[]Post, error)
 	GetById(postId int64) (*Post, error)
 }
 
@@ -21,6 +21,7 @@ type ServiceInterface interface {
 type Post struct {
 	ID        int64     `json:"id,omitempty"`
 	UserId    int64     `json:"user_id,omitempty"`
+	Creator   string    `json:"creator,omitempty"`
 	Title     string    `json:"title,omitempty"`
 	Content   string    `json:"content,omitempty"`
 	CreatedAt time.Time `json:"created_at,omitempty"`
