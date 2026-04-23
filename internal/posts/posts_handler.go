@@ -32,6 +32,28 @@ func (h *Handler) GetPosts(w http.ResponseWriter, r *http.Request) {
 	}, http.StatusOK)
 }
 
+func (h *Handler) GetFollowedPosts(w http.ResponseWriter, r *http.Request) {
+	followerId := r.PathValue("followerId")
+
+	followerIdInt, err := strconv.Atoi(followerId)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	posts, err := h.service.GetFollowedPosts(int64(followerIdInt))
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	httpjson.Respond(w, httpjson.ResponseBody{
+		Data: posts,
+	}, http.StatusOK)
+}
+
 func (h *Handler) GetPostById(w http.ResponseWriter, r *http.Request) {
 	postId := r.PathValue("id")
 

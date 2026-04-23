@@ -7,12 +7,14 @@ type StoreInterface interface {
 	Create(postData *CreatePostParam) error
 	Delete(postId int64) error
 	GetPosts() (*[]Post, error)
+	GetFollowedPosts(followerId int64) (*[]Post, error)
 	GetById(postId int64) (*Post, error)
 }
 
 type ServiceInterface interface {
 	CreatePost(postData *CreatePostParam) error
 	GetPosts() (*[]Post, error)
+	GetFollowedPosts(followerId int64) (*[]Post, error)
 	GetPostById(postId int64) (*Post, error)
 	DeletePost(postId int64) error
 }
