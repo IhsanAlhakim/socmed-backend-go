@@ -1,0 +1,25 @@
+package plikes
+
+// Interface
+type StoreInterface interface {
+	LikePost(postLikeData *PostLikeParam) error
+	UnlikePost(postLikeData *PostLikeParam) error
+}
+
+type ServiceInterface interface {
+	LikePost(postLikeData *PostLikeParam) error
+	UnlikePost(postLikeData *PostLikeParam) error
+}
+
+// struct
+type PostLike struct {
+	ID       int64  `json:"id,omitempty"`
+	PostId   int64  `json:"post_id,omitempty"`
+	UserId   int64  `json:"user_id,omitempty"`
+	Username string `json:"username,omitempty"`
+}
+
+type PostLikeParam struct {
+	PostId int64 `json:"post_id,omitempty"`
+	UserId int64 `json:"user_id,omitempty"`
+}

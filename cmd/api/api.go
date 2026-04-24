@@ -9,6 +9,7 @@ import (
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/comments"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/config"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/follows"
+	plikes "github.com/IhsanAlhakim/socmed-backend-go/internal/post_likes"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/posts"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/users"
 )
@@ -76,5 +77,10 @@ func (app *application) mount() http.Handler {
 	mux.HandleFunc("GET /comments/{postId}", commentHandler.Getcomments)
 	mux.HandleFunc("DELETE /comments/{commentId}", commentHandler.DeleteComment)
 
+	postLikesStore := plikes.NewStore(app.db)
+	postLikesService := plikes.NewService(postLikesStore)
+	postLikesHandler := plikes.NewHandler(postLikesService)
+	mux.HandleFunc("POST /posts/likes", postLikesHandler.LikePost)
+	mux.HandleFunc("DELETE /posts/likes", postLikesHandler.UnlikePost)
 	return mux
 }
