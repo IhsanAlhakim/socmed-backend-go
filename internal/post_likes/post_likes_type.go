@@ -4,11 +4,13 @@ package plikes
 type StoreInterface interface {
 	LikePost(postLikeData *PostLikeParam) error
 	UnlikePost(postLikeData *PostLikeParam) error
+	GetPostLiker(postId int64) (*[]PostLike, error)
 }
 
 type ServiceInterface interface {
 	LikePost(postLikeData *PostLikeParam) error
 	UnlikePost(postLikeData *PostLikeParam) error
+	GetPostLiker(postId int64) (*[]PostLike, error)
 }
 
 // struct

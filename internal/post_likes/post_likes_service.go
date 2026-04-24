@@ -25,3 +25,11 @@ func (svc *Service) UnlikePost(postLikeData *PostLikeParam) error {
 	}
 	return nil
 }
+
+func (svc *Service) GetPostLiker(postId int64) (*[]PostLike, error) {
+	postLiker, err := svc.store.GetPostLiker(postId)
+	if err != nil {
+		return nil, err
+	}
+	return postLiker, nil
+}
