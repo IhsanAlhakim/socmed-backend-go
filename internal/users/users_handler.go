@@ -46,8 +46,8 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	userId := r.PathValue("id")
 	userIdInt, err := strconv.Atoi(userId)
 
-	var updatedUserData UpdateUserParam
-	if err := httpjson.Decode(r, &updatedUserData); err != nil {
+	var payload UpdateUserParam
+	if err := httpjson.Decode(r, &payload); err != nil {
 		log.Println(err)
 		if err == httpjson.ErrEmptyBody {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -57,7 +57,7 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.service.UpdateUser(int64(userIdInt), &updatedUserData)
+	err = h.service.UpdateUser(int64(userIdInt), &payload)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

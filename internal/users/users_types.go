@@ -6,14 +6,14 @@ import (
 
 // Interface
 type StoreInterface interface {
-	Create(userData *CreateUserParam) error
-	Update(userId int64, updatedUserData *UpdateUserParam) error
+	Create(payload *CreateUserParam) error
+	Update(userId int64, payload *UpdateUserParam) error
 	Delete(userId int64) error
 }
 
 type ServiceInterface interface {
-	CreateUser(userData *CreateUserParam) error
-	UpdateUser(userId int64, updatedUserData *UpdateUserParam) error
+	CreateUser(payload *CreateUserParam) error
+	UpdateUser(userId int64, payload *UpdateUserParam) error
 	DeleteUser(userId int64) error
 }
 

@@ -10,12 +10,12 @@ type Service struct {
 	store StoreInterface
 }
 
-func (svc *Service) CreateUser(userdata *CreateUserParam) error {
+func (svc *Service) CreateUser(payload *CreateUserParam) error {
 	// input validation
 
 	// hash password
 
-	err := svc.store.Create(userdata)
+	err := svc.store.Create(payload)
 	if err != nil {
 		return err
 	}
@@ -23,8 +23,8 @@ func (svc *Service) CreateUser(userdata *CreateUserParam) error {
 	return nil
 }
 
-func (svc *Service) UpdateUser(userId int64, updatedUserData *UpdateUserParam) error {
-	err := svc.store.Update(userId, updatedUserData)
+func (svc *Service) UpdateUser(userId int64, payload *UpdateUserParam) error {
+	err := svc.store.Update(userId, payload)
 	if err != nil {
 		return err
 	}
