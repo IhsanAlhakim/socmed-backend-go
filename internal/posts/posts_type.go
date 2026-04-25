@@ -4,7 +4,7 @@ import "time"
 
 // Interface
 type StoreInterface interface {
-	Create(postData *CreatePostParam) error
+	Create(payload *CreatePostParam) error
 	Delete(postId int64) error
 	GetPosts() (*[]Post, error)
 	GetFollowedPosts(followerId int64) (*[]Post, error)
@@ -12,7 +12,7 @@ type StoreInterface interface {
 }
 
 type ServiceInterface interface {
-	CreatePost(postData *CreatePostParam) error
+	CreatePost(payload *CreatePostParam) error
 	GetPosts() (*[]Post, error)
 	GetFollowedPosts(followerId int64) (*[]Post, error)
 	GetPostById(postId int64) (*Post, error)

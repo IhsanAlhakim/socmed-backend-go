@@ -4,13 +4,13 @@ import "time"
 
 // Interface
 type StoreInterface interface {
-	CreateComment(postData *CreateCommentParam) error
+	CreateComment(payload *CreateCommentParam) error
 	Getcomments(postId int64) (*[]Comment, error)
 	DeleteComment(commentId int64) error
 }
 
 type ServiceInterface interface {
-	CreateComment(postData *CreateCommentParam) error
+	CreateComment(payload *CreateCommentParam) error
 	Getcomments(postId int64) (*[]Comment, error)
 	DeleteComment(commentId int64) error
 }

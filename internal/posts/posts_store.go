@@ -12,13 +12,13 @@ type PostgresStore struct {
 	db *sql.DB
 }
 
-func (pgs *PostgresStore) Create(postData *CreatePostParam) error {
+func (pgs *PostgresStore) Create(payload *CreatePostParam) error {
 	query := `
 	INSERT INTO posts (user_id, title, content)
 	VALUES ($1, $2, $3)
 	`
 
-	_, err := pgs.db.Exec(query, postData.UserId, postData.Title, postData.Content)
+	_, err := pgs.db.Exec(query, payload.UserId, payload.Title, payload.Content)
 
 	if err != nil {
 		return err
