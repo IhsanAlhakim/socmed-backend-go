@@ -19,8 +19,8 @@ type Handler struct {
 }
 
 func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
-	var commentData CreateCommentParam
-	if err := httpjson.Decode(r, &commentData); err != nil {
+	var payload CreateCommentParam
+	if err := httpjson.Decode(r, &payload); err != nil {
 		log.Println(err)
 		if err == httpjson.ErrEmptyBody {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -30,7 +30,7 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.CreateComment(&commentData)
+	err := h.service.CreateComment(&payload)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
