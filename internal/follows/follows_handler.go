@@ -61,8 +61,8 @@ func (h *Handler) GetFollowed(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Follow(w http.ResponseWriter, r *http.Request) {
-	var followData FollowDataparam
-	if err := httpjson.Decode(r, &followData); err != nil {
+	var payload FollowParam
+	if err := httpjson.Decode(r, &payload); err != nil {
 		log.Println(err)
 		if err == httpjson.ErrEmptyBody {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -72,7 +72,7 @@ func (h *Handler) Follow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.Follow(&followData)
+	err := h.service.Follow(&payload)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -85,8 +85,8 @@ func (h *Handler) Follow(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Unfollow(w http.ResponseWriter, r *http.Request) {
-	var followData FollowDataparam
-	if err := httpjson.Decode(r, &followData); err != nil {
+	var payload FollowParam
+	if err := httpjson.Decode(r, &payload); err != nil {
 		log.Println(err)
 		if err == httpjson.ErrEmptyBody {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -96,7 +96,7 @@ func (h *Handler) Unfollow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.Unfollow(&followData)
+	err := h.service.Unfollow(&payload)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

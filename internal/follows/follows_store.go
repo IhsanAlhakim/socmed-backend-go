@@ -83,13 +83,13 @@ func (pgs *PostgresStore) GetFollowed(followerId int64) (*[]Follow, error) {
 	return &result, nil
 }
 
-func (pgs *PostgresStore) Create(followData *FollowDataparam) error {
+func (pgs *PostgresStore) Create(payload *FollowParam) error {
 	query := `
 	INSERT INTO follows (followed_id, follower_id)
 	VALUES ($1, $2)
 	`
 
-	_, err := pgs.db.Exec(query, followData.FollowedId, followData.FollowerId)
+	_, err := pgs.db.Exec(query, payload.FollowedId, payload.FollowerId)
 
 	if err != nil {
 		return err
@@ -98,7 +98,7 @@ func (pgs *PostgresStore) Create(followData *FollowDataparam) error {
 	return nil
 }
 
-func (pgs *PostgresStore) Delete(followData *FollowDataparam) error {
+func (pgs *PostgresStore) Delete(payload *FollowParam) error {
 	query := `
 	DELETE FROM follows
 	WHERE followed_id = $1
@@ -106,7 +106,7 @@ func (pgs *PostgresStore) Delete(followData *FollowDataparam) error {
 	follower_id = $2
 	`
 
-	_, err := pgs.db.Exec(query, followData.FollowedId, followData.FollowerId)
+	_, err := pgs.db.Exec(query, payload.FollowedId, payload.FollowerId)
 
 	if err != nil {
 		return err
