@@ -10,16 +10,16 @@ type Service struct {
 	store StoreInterface
 }
 
-func (svc *Service) LikePost(postLikeData *PostLikeParam) error {
-	err := svc.store.LikePost(postLikeData)
+func (svc *Service) LikePost(payload *PostLikeParam) error {
+	err := svc.store.LikePost(payload)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (svc *Service) UnlikePost(postLikeData *PostLikeParam) error {
-	err := svc.store.UnlikePost(postLikeData)
+func (svc *Service) UnlikePost(payload *PostLikeParam) error {
+	err := svc.store.UnlikePost(payload)
 	if err != nil {
 		return err
 	}

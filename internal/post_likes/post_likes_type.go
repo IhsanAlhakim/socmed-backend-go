@@ -2,14 +2,14 @@ package plikes
 
 // Interface
 type StoreInterface interface {
-	LikePost(postLikeData *PostLikeParam) error
-	UnlikePost(postLikeData *PostLikeParam) error
+	LikePost(payload *PostLikeParam) error
+	UnlikePost(payload *PostLikeParam) error
 	GetPostLiker(postId int64) (*[]PostLike, error)
 }
 
 type ServiceInterface interface {
-	LikePost(postLikeData *PostLikeParam) error
-	UnlikePost(postLikeData *PostLikeParam) error
+	LikePost(payload *PostLikeParam) error
+	UnlikePost(payload *PostLikeParam) error
 	GetPostLiker(postId int64) (*[]PostLike, error)
 }
 

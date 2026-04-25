@@ -19,8 +19,8 @@ type Handler struct {
 }
 
 func (h *Handler) LikePost(w http.ResponseWriter, r *http.Request) {
-	var postLikeData PostLikeParam
-	if err := httpjson.Decode(r, &postLikeData); err != nil {
+	var payload PostLikeParam
+	if err := httpjson.Decode(r, &payload); err != nil {
 		log.Println(err)
 		if err == httpjson.ErrEmptyBody {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -30,7 +30,7 @@ func (h *Handler) LikePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.LikePost(&postLikeData)
+	err := h.service.LikePost(&payload)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -43,8 +43,8 @@ func (h *Handler) LikePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) UnlikePost(w http.ResponseWriter, r *http.Request) {
-	var postLikeData PostLikeParam
-	if err := httpjson.Decode(r, &postLikeData); err != nil {
+	var payload PostLikeParam
+	if err := httpjson.Decode(r, &payload); err != nil {
 		log.Println(err)
 		if err == httpjson.ErrEmptyBody {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -54,7 +54,7 @@ func (h *Handler) UnlikePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.UnlikePost(&postLikeData)
+	err := h.service.UnlikePost(&payload)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
