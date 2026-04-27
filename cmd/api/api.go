@@ -57,7 +57,7 @@ func (app *application) mount() http.Handler {
 	postService := posts.NewService(postStore)
 	postHandler := posts.NewHandler(postService)
 	mux.HandleFunc("GET /posts", postHandler.GetPosts)
-	mux.HandleFunc("GET /posts/followed/{followerId}", postHandler.GetFollowedPosts)
+	mux.HandleFunc("GET /users/{userId}/followed-posts", postHandler.GetFollowedPosts)
 	mux.HandleFunc("GET /posts/{id}", postHandler.GetPostById)
 	mux.HandleFunc("POST /posts", postHandler.CreatePost)
 	mux.HandleFunc("DELETE /posts/{id}", postHandler.DeletePost)

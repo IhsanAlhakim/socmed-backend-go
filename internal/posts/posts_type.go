@@ -7,14 +7,14 @@ type StoreInterface interface {
 	Create(payload *CreatePostParam) error
 	Delete(postId int64) error
 	GetPosts() (*[]Post, error)
-	GetFollowedPosts(followerId int64) (*[]Post, error)
+	GetFollowedPosts(userId int64) (*[]Post, error)
 	GetById(postId int64) (*Post, error)
 }
 
 type ServiceInterface interface {
 	CreatePost(payload *CreatePostParam) error
 	GetPosts() (*[]Post, error)
-	GetFollowedPosts(followerId int64) (*[]Post, error)
+	GetFollowedPosts(userId int64) (*[]Post, error)
 	GetPostById(postId int64) (*Post, error)
 	DeletePost(postId int64) error
 }

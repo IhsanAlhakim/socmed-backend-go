@@ -72,7 +72,7 @@ func (pgs *PostgresStore) GetPosts() (*[]Post, error) {
 	return &result, nil
 }
 
-func (pgs *PostgresStore) GetFollowedPosts(followerId int64) (*[]Post, error) {
+func (pgs *PostgresStore) GetFollowedPosts(userId int64) (*[]Post, error) {
 
 	query := `
 	SELECT p.id, u.username as creator, p.title, p.content, p.created_at
@@ -80,7 +80,7 @@ func (pgs *PostgresStore) GetFollowedPosts(followerId int64) (*[]Post, error) {
 	JOIN users u ON p.user_id = u.id
 	WHERE p.user_id IN (SELECT followed_id FROM follows WHERE follower_id = $1)
 	`
-	rows, err := pgs.db.Query(query, followerId)
+	rows, err := pgs.db.Query(query, userId)
 	if err != nil {
 		return nil, err
 	}

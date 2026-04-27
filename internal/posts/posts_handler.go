@@ -33,16 +33,16 @@ func (h *Handler) GetPosts(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetFollowedPosts(w http.ResponseWriter, r *http.Request) {
-	followerId := r.PathValue("followerId")
+	userId := r.PathValue("userId")
 
-	followerIdInt, err := strconv.Atoi(followerId)
+	userIdInt, err := strconv.Atoi(userId)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	posts, err := h.service.GetFollowedPosts(int64(followerIdInt))
+	posts, err := h.service.GetFollowedPosts(int64(userIdInt))
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
