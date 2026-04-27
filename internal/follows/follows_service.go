@@ -35,7 +35,7 @@ func (svc *Service) Follow(userId int64, payload *FollowParam) error {
 }
 
 func (svc *Service) Unfollow(userId int64, payload *FollowParam) error {
-	err := svc.store.Follow(userId, payload)
+	err := svc.store.Unfollow(userId, payload)
 	if err != nil {
 		return err
 	}
