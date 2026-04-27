@@ -10,13 +10,13 @@ type PostgresStore struct {
 	db *sql.DB
 }
 
-func (pgs *PostgresStore) LikePost(payload *PostLikeParam) error {
+func (pgs *PostgresStore) LikePost(postId int64, payload *PostLikeParam) error {
 	query := `
 	INSERT INTO post_likes (post_id, user_id)
 	VALUES ($1, $2)
 	`
 
-	_, err := pgs.db.Exec(query, payload.PostId, payload.UserId)
+	_, err := pgs.db.Exec(query, postId, payload.UserId)
 
 	if err != nil {
 		return err
@@ -25,14 +25,14 @@ func (pgs *PostgresStore) LikePost(payload *PostLikeParam) error {
 	return nil
 }
 
-func (pgs *PostgresStore) UnlikePost(payload *PostLikeParam) error {
+func (pgs *PostgresStore) UnlikePost(postId int64, payload *PostLikeParam) error {
 	query := `
 	DELETE FROM post_likes
 	WHERE post_id = $1
 	AND user_id = $2
 	`
 
-	_, err := pgs.db.Exec(query, payload.PostId, payload.UserId)
+	_, err := pgs.db.Exec(query, postId, payload.UserId)
 
 	if err != nil {
 		return err

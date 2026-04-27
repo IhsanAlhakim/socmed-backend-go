@@ -80,8 +80,8 @@ func (app *application) mount() http.Handler {
 	postLikesStore := plikes.NewStore(app.db)
 	postLikesService := plikes.NewService(postLikesStore)
 	postLikesHandler := plikes.NewHandler(postLikesService)
-	mux.HandleFunc("POST /posts/likes", postLikesHandler.LikePost)
-	mux.HandleFunc("DELETE /posts/likes", postLikesHandler.UnlikePost)
+	mux.HandleFunc("POST /posts/{postId}/likes", postLikesHandler.LikePost)
+	mux.HandleFunc("DELETE /posts/{postId}/likes", postLikesHandler.UnlikePost)
 	mux.HandleFunc("GET /posts/{postId}/likes", postLikesHandler.GetPostLiker)
 	return mux
 }
