@@ -4,13 +4,13 @@ import "time"
 
 // Interface
 type StoreInterface interface {
-	CreateComment(payload *CreateCommentParam) error
+	CreateComment(postId int64, payload *CreateCommentParam) error
 	Getcomments(postId int64) (*[]Comment, error)
 	DeleteComment(commentId int64) error
 }
 
 type ServiceInterface interface {
-	CreateComment(payload *CreateCommentParam) error
+	CreateComment(postId int64, payload *CreateCommentParam) error
 	Getcomments(postId int64) (*[]Comment, error)
 	DeleteComment(commentId int64) error
 }
@@ -27,6 +27,5 @@ type Comment struct {
 
 type CreateCommentParam struct {
 	UserId  int64  `json:"user_id"`
-	PostId  int64  `json:"post_id"`
 	Content string `json:"content"`
 }

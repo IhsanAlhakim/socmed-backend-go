@@ -73,9 +73,9 @@ func (app *application) mount() http.Handler {
 	commentStore := comments.NewStore(app.db)
 	commentService := comments.NewService(commentStore)
 	commentHandler := comments.NewHandler(commentService)
-	mux.HandleFunc("POST /posts/comments", commentHandler.CreateComment)
+	mux.HandleFunc("POST /posts/{postId}/comments", commentHandler.CreateComment)
 	mux.HandleFunc("GET /posts/{postId}/comments", commentHandler.Getcomments)
-	mux.HandleFunc("DELETE /posts/comments/{commentId}", commentHandler.DeleteComment)
+	mux.HandleFunc("DELETE /comments/{commentId}", commentHandler.DeleteComment)
 
 	postLikesStore := plikes.NewStore(app.db)
 	postLikesService := plikes.NewService(postLikesStore)

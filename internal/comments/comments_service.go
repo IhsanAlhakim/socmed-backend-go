@@ -10,8 +10,8 @@ type Service struct {
 	store StoreInterface
 }
 
-func (svc *Service) CreateComment(payload *CreateCommentParam) error {
-	err := svc.store.CreateComment(payload)
+func (svc *Service) CreateComment(postId int64, payload *CreateCommentParam) error {
+	err := svc.store.CreateComment(postId, payload)
 	if err != nil {
 		return err
 	}

@@ -19,6 +19,14 @@ type Handler struct {
 }
 
 func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
+	postId := r.PathValue("postId")
+	postIdInt, err := strconv.Atoi(postId)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	var payload CreateCommentParam
 	if err := httpjson.Decode(r, &payload); err != nil {
 		log.Println(err)
@@ -30,7 +38,7 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.CreateComment(&payload)
+	err = h.service.CreateComment(int64(postIdInt), &payload)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
