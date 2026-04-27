@@ -2,17 +2,17 @@ package follows
 
 // Interface
 type StoreInterface interface {
-	Create(payload *FollowParam) error
-	Delete(payload *FollowParam) error
-	GetFollower(followedId int64) (*[]Follow, error)
-	GetFollowed(followerId int64) (*[]Follow, error)
+	Follow(userId int64, payload *FollowParam) error
+	Unfollow(userId int64, payload *FollowParam) error
+	GetFollower(userId int64) (*[]Follow, error)
+	GetFollowed(userId int64) (*[]Follow, error)
 }
 
 type ServiceInterface interface {
-	Follow(payload *FollowParam) error
-	Unfollow(payload *FollowParam) error
-	GetFollower(followedId int64) (*[]Follow, error)
-	GetFollowed(followerId int64) (*[]Follow, error)
+	Follow(userId int64, payload *FollowParam) error
+	Unfollow(userId int64, payload *FollowParam) error
+	GetFollower(userId int64) (*[]Follow, error)
+	GetFollowed(userId int64) (*[]Follow, error)
 }
 
 // struct
@@ -26,5 +26,4 @@ type Follow struct {
 
 type FollowParam struct {
 	FollowedId int64 `json:"followed_id"`
-	FollowerId int64 `json:"follower_id"`
 }

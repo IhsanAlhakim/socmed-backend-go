@@ -19,15 +19,15 @@ type Handler struct {
 }
 
 func (h *Handler) GetFollower(w http.ResponseWriter, r *http.Request) {
-	followedId := r.PathValue("followedId")
-	followedIdInt, err := strconv.Atoi(followedId)
+	userId := r.PathValue("userId")
+	userIdInt, err := strconv.Atoi(userId)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	follower, err := h.service.GetFollower(int64(followedIdInt))
+	follower, err := h.service.GetFollower(int64(userIdInt))
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -40,15 +40,15 @@ func (h *Handler) GetFollower(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetFollowed(w http.ResponseWriter, r *http.Request) {
-	followerId := r.PathValue("followerId")
-	followerIdInt, err := strconv.Atoi(followerId)
+	userId := r.PathValue("userId")
+	userIdInt, err := strconv.Atoi(userId)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	followed, err := h.service.GetFollowed(int64(followerIdInt))
+	followed, err := h.service.GetFollowed(int64(userIdInt))
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -61,6 +61,14 @@ func (h *Handler) GetFollowed(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Follow(w http.ResponseWriter, r *http.Request) {
+	userId := r.PathValue("userId")
+	userIdInt, err := strconv.Atoi(userId)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	var payload FollowParam
 	if err := httpjson.Decode(r, &payload); err != nil {
 		log.Println(err)
@@ -72,7 +80,7 @@ func (h *Handler) Follow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.Follow(&payload)
+	err = h.service.Follow(int64(userIdInt), &payload)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -85,6 +93,14 @@ func (h *Handler) Follow(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Unfollow(w http.ResponseWriter, r *http.Request) {
+	userId := r.PathValue("userId")
+	userIdInt, err := strconv.Atoi(userId)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	var payload FollowParam
 	if err := httpjson.Decode(r, &payload); err != nil {
 		log.Println(err)
@@ -96,7 +112,7 @@ func (h *Handler) Unfollow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.Unfollow(&payload)
+	err = h.service.Unfollow(int64(userIdInt), &payload)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
