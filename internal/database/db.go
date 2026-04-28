@@ -9,7 +9,7 @@ import (
 )
 
 func New(dbConfig config.DBConfig) (*sql.DB, error) {
-	db, err := sql.Open("pgx", dbConfig.Dsn)
+	db, err := sql.Open(dbConfig.DbDriver, dbConfig.Dsn)
 	if err != nil {
 		return nil, err
 	}

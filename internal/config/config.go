@@ -8,7 +8,8 @@ import (
 )
 
 type DBConfig struct {
-	Dsn string
+	Dsn      string
+	DbDriver string
 }
 
 type Config struct {
@@ -29,7 +30,8 @@ func Load() *Config {
 		AppName: env.GetString("APPNAME", "socmed"),
 		Port:    env.GetString("PORT", "8000"),
 		DBConfig: DBConfig{
-			Dsn: env.GetString("DSN", "postgres://postgres:admin123@localhost:5432/socmed"),
+			Dsn:      env.GetString("DSN", "postgres://postgres:admin123@localhost:5432/socmed"),
+			DbDriver: env.GetString("DB_DRIVER", "pgx"),
 		},
 		JWTSignKey:      env.GetString("JWT_SIGNATURE_KEY", "very-secret-key"),
 		TokenCookieName: env.GetString("TOKEN_COOKIE_NAME", "cookie-token-name"),
