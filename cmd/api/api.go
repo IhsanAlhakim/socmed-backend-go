@@ -52,6 +52,8 @@ func (app *application) mount() http.Handler {
 	mux.HandleFunc("POST /users", userHandler.CreateUser)
 	mux.HandleFunc("PUT /users/{id}", userHandler.UpdateUser)
 	mux.HandleFunc("DELETE /users/{id}", userHandler.DeleteUser)
+	mux.HandleFunc("POST /sessions", userHandler.SignIn)
+	mux.HandleFunc("DELETE /sessions", userHandler.SignOut)
 
 	postStore := posts.NewStore(app.db)
 	postService := posts.NewService(postStore)
