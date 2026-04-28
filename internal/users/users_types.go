@@ -1,20 +1,23 @@
 package users
 
 import (
+	"net/http"
 	"time"
 )
 
 // Interface
 type StoreInterface interface {
-	Create(payload *CreateUserParam) error
-	Update(userId int64, payload *UpdateUserParam) error
-	Delete(userId int64) error
+	CreateUser(payload *CreateUserParam) error
+	UpdateUser(userId int64, payload *UpdateUserParam) error
+	DeleteUser(userId int64) error
+	GetUserByEmail(email string) (*User, error)
 }
 
 type ServiceInterface interface {
 	CreateUser(payload *CreateUserParam) error
 	UpdateUser(userId int64, payload *UpdateUserParam) error
 	DeleteUser(userId int64) error
+	SignIn(payload *SignInParam) (*http.Cookie, error)
 }
 
 // Struct
@@ -35,4 +38,9 @@ type CreateUserParam struct {
 type UpdateUserParam struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
+}
+
+type SignInParam struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }

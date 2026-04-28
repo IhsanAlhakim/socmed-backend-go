@@ -47,7 +47,7 @@ func (app *application) mount() http.Handler {
 	})
 
 	userStore := users.NewStore(app.db)
-	userService := users.NewService(userStore)
+	userService := users.NewService(userStore, app.config)
 	userHandler := users.NewHandler(userService)
 	mux.HandleFunc("POST /users", userHandler.CreateUser)
 	mux.HandleFunc("PUT /users/{id}", userHandler.UpdateUser)

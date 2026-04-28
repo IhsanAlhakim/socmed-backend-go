@@ -1,11 +1,13 @@
 package users
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/httpjson"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func NewHandler(service ServiceInterface) *Handler {
@@ -18,9 +20,9 @@ type Handler struct {
 	service ServiceInterface
 }
 
-func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
-	var user CreateUserParam
-	if err := httpjson.Decode(r, &user); err != nil {
+func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
+	var payload SignInParam
+	if err := httpjson.Decode(r, &payload); err != nil {
 		log.Println(err)
 		if err == httpjson.ErrEmptyBody {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -30,7 +32,37 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.CreateUser(&user)
+	cookie, err := h.service.SignIn(&payload)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			http.Error(w, "user not found", http.StatusNotFound)
+		} else if err == bcrypt.ErrMismatchedHashAndPassword {
+			http.Error(w, "invalid credentials", http.StatusUnauthorized)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	http.SetCookie(w, cookie)
+	httpjson.Respond(w, httpjson.ResponseBody{
+		Message: "Sign In Successful",
+	}, http.StatusOK)
+}
+
+func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
+	var payload CreateUserParam
+	if err := httpjson.Decode(r, &payload); err != nil {
+		log.Println(err)
+		if err == httpjson.ErrEmptyBody {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	err := h.service.CreateUser(&payload)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

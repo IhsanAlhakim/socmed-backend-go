@@ -12,7 +12,25 @@ type PostgresStore struct {
 	db *sql.DB
 }
 
-func (pgs *PostgresStore) Create(user *CreateUserParam) error {
+func (pgs *PostgresStore) GetUserByEmail(email string) (*User, error) {
+
+	query := `
+	SELECT id, password
+	FROM users
+	WHERE email = $1
+	`
+
+	var result User
+
+	err := pgs.db.QueryRow(query, email).Scan(&result.ID, &result.Password)
+	if err != nil {
+		return &User{}, err
+	}
+
+	return &result, nil
+}
+
+func (pgs *PostgresStore) CreateUser(user *CreateUserParam) error {
 	query := `
 	INSERT INTO users (username, password, email)
 	VALUES ($1, $2, $3)
@@ -27,7 +45,7 @@ func (pgs *PostgresStore) Create(user *CreateUserParam) error {
 	return nil
 }
 
-func (pgs *PostgresStore) Update(userId int64, payload *UpdateUserParam) error {
+func (pgs *PostgresStore) UpdateUser(userId int64, payload *UpdateUserParam) error {
 
 	query := `
 	UPDATE users 
@@ -42,7 +60,7 @@ func (pgs *PostgresStore) Update(userId int64, payload *UpdateUserParam) error {
 	return nil
 }
 
-func (pgs *PostgresStore) Delete(userId int64) error {
+func (pgs *PostgresStore) DeleteUser(userId int64) error {
 
 	query := `
 	DELETE FROM users 
