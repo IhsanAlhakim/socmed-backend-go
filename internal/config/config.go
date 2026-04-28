@@ -12,8 +12,12 @@ type DBConfig struct {
 }
 
 type Config struct {
+	AppName  string
 	Port     string
 	DBConfig DBConfig
+
+	JWTSignKey      string
+	TokenCookieName string
 }
 
 func Load() *Config {
@@ -22,9 +26,12 @@ func Load() *Config {
 	}
 
 	return &Config{
-		Port: env.GetString("PORT", "8000"),
+		AppName: env.GetString("APPNAME", "socmed"),
+		Port:    env.GetString("PORT", "8000"),
 		DBConfig: DBConfig{
 			Dsn: env.GetString("DSN", "postgres://postgres:admin123@localhost:5432/socmed"),
 		},
+		JWTSignKey:      env.GetString("JWT_SIGNATURE_KEY", "very-secret-key"),
+		TokenCookieName: env.GetString("TOKEN_COOKIE_NAME", "cookie-token-name"),
 	}
 }
