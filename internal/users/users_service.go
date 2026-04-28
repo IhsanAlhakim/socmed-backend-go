@@ -53,8 +53,13 @@ func (svc *Service) CreateUser(payload *CreateUserParam) error {
 	// input validation
 
 	// hash password
+	hashedPassword, err := auth.GenerateHashPassword(payload.Password)
+	if err != nil {
+		return err
+	}
+	payload.Password = string(hashedPassword)
 
-	err := svc.store.CreateUser(payload)
+	err = svc.store.CreateUser(payload)
 	if err != nil {
 		return err
 	}
