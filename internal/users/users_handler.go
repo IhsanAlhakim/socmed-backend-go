@@ -50,6 +50,16 @@ func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 	}, http.StatusOK)
 }
 
+func (h *Handler) SignOut(w http.ResponseWriter, r *http.Request) {
+
+	cookie := h.service.SignOut()
+
+	http.SetCookie(w, cookie)
+	httpjson.Respond(w, httpjson.ResponseBody{
+		Message: "Sign Out Successful",
+	}, http.StatusOK)
+}
+
 func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var payload CreateUserParam
 	if err := httpjson.Decode(r, &payload); err != nil {

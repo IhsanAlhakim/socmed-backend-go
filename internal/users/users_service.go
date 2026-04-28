@@ -49,6 +49,15 @@ func (svc *Service) SignIn(payload *SignInParam) (*http.Cookie, error) {
 	return cookie, nil
 }
 
+func (svc *Service) SignOut() *http.Cookie {
+	cookie := &http.Cookie{
+		Name:    svc.config.TokenCookieName,
+		Expires: time.Unix(0, 0),
+		MaxAge:  -1,
+	}
+	return cookie
+}
+
 func (svc *Service) CreateUser(payload *CreateUserParam) error {
 	// input validation
 

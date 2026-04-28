@@ -18,6 +18,7 @@ type ServiceInterface interface {
 	UpdateUser(userId int64, payload *UpdateUserParam) error
 	DeleteUser(userId int64) error
 	SignIn(payload *SignInParam) (*http.Cookie, error)
+	SignOut() *http.Cookie
 }
 
 // Struct
