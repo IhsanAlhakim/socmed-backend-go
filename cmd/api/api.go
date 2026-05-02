@@ -13,6 +13,7 @@ import (
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/posts"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/users"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 type application struct {
@@ -42,6 +43,10 @@ func newApp(db *sql.DB, config *config.Config) *application {
 
 func (app *application) mount() http.Handler {
 	r := chi.NewRouter()
+
+	r.Use(middleware.RequestID)
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
 
 	r.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("OK"))
