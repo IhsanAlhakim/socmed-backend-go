@@ -12,7 +12,6 @@ type MyClaims struct {
 }
 
 var (
-	ErrInvalidToken         = errors.New("Invalid Token")
 	ErrInvalidSigningMethod = errors.New("Invalid Signing Method")
 )
 
@@ -57,12 +56,12 @@ func VerifyToken(tokenString string, JWTSignKey string) (jwt.Claims, error) {
 	})
 
 	if err != nil {
-		return nil, ErrInvalidToken
+		return nil, err
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return nil, ErrInvalidToken
+		return nil, err
 	}
 	return claims, nil
 }
