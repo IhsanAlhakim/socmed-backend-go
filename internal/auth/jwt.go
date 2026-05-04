@@ -21,7 +21,7 @@ var (
 	JWT_SIGNING_METHOD        = jwt.SigningMethodHS256
 )
 
-func GenerateToken(userId string, issuer string, JTWSignKey string) (string, error) {
+func GenerateToken(userId string, issuer string, JWTSignKey string) (string, error) {
 	claims := MyClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			Subject:   userId,
@@ -35,7 +35,7 @@ func GenerateToken(userId string, issuer string, JTWSignKey string) (string, err
 		claims,
 	)
 
-	jwtSignKeyByte := []byte(issuer)
+	jwtSignKeyByte := []byte(JWTSignKey)
 
 	signedToken, err := token.SignedString(jwtSignKeyByte)
 	if err != nil {
