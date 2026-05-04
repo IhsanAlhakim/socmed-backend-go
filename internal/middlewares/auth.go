@@ -15,19 +15,19 @@ func (m *Middleware) Auth(next http.Handler) http.Handler {
 		func(w http.ResponseWriter, r *http.Request) {
 			storedToken, err := r.Cookie(m.config.TokenCookieName)
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 				return
 			}
 			claims, err := auth.VerifyToken(storedToken.Value, m.config.JWTSignKey)
 			if err != nil {
-				if errors.Is(err, auth.ErrInvalidSigningMethod) || errors.Is(err, auth.ErrInvalidToken) {
-					http.Error(w, "Invalid credentials", http.StatusBadRequest)
+				if errors.Is(err, auth.ErrInvalidSigningMethod) {
+					http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 					return
 				}
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			ctx := context.WithValue(context.Background(), ContextWithUserInfoKey, claims)
+			ctx := context.WithValue(r.Context(), ContextWithUserInfoKey, claims)
 			r = r.WithContext(ctx)
 			next.ServeHTTP(w, r)
 		})
