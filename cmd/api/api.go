@@ -1,9 +1,14 @@
 package main
 
 import (
+	"context"
 	"database/sql"
+	"errors"
+	"fmt"
 	"log"
 	"net/http"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/comments"
@@ -33,10 +38,34 @@ func (app *application) run(mux http.Handler) error {
 		IdleTimeout:  time.Minute,
 	}
 
-	// TODO :   add graceful shutdown
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
 
-	log.Println("Server has started at :8080")
-	return server.ListenAndServe()
+	var errChan = make(chan error)
+
+	// Run server in the background
+	go func() {
+		log.Printf("Server has started at port %s", app.config.Port)
+		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			errChan <- err
+		}
+	}()
+
+	select {
+	case err := <-errChan:
+		return err
+	case <-ctx.Done(): // Listen for the interrupt signal
+		// Create shutdown context with 30-second timeout
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+
+		// Trigger graceful shutdown
+		fmt.Println("graceful shutdown...")
+		if err := server.Shutdown(shutdownCtx); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func newApp(db *sql.DB, config *config.Config) *application {
