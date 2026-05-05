@@ -8,6 +8,7 @@ import (
 
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/comments"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/config"
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/env"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/follows"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/middlewares"
 	plikes "github.com/IhsanAlhakim/socmed-backend-go/internal/post_likes"
@@ -15,6 +16,7 @@ import (
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/users"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 )
 
 type application struct {
@@ -31,7 +33,7 @@ func (app *application) run(mux http.Handler) error {
 		IdleTimeout:  time.Minute,
 	}
 
-	// add graceful shutdown
+	// TODO :   add graceful shutdown
 
 	log.Println("Server has started at :8080")
 	return server.ListenAndServe()
@@ -52,6 +54,15 @@ func (app *application) mount() http.Handler {
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{env.GetString("ALLOWED_ORIGIN", "http://localhost:5173")},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		AllowCredentials: true,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	}))
+
+	// TODO : add CORS
 
 	userStore := users.NewStore(app.db)
 	userService := users.NewService(userStore, app.config)
@@ -79,6 +90,8 @@ func (app *application) mount() http.Handler {
 
 	r.HandleFunc("POST /users", userHandler.CreateUser)
 	r.HandleFunc("POST /sessions", userHandler.SignIn)
+
+	// TODO : add input validation
 
 	// Endpoint with auth middleware
 	r.Route("/", func(r chi.Router) {
