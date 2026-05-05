@@ -26,6 +26,6 @@ type Comment struct {
 }
 
 type CreateCommentParam struct {
-	UserId  int64  `json:"user_id"`
-	Content string `json:"content"`
+	UserId  int64  `json:"user_id" validate:"required"`
+	Content string `json:"content" validate:"required"`
 }

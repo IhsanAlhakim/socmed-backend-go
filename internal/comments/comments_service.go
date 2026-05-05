@@ -1,5 +1,7 @@
 package comments
 
+import "github.com/IhsanAlhakim/socmed-backend-go/internal/validation"
+
 func NewService(store StoreInterface) ServiceInterface {
 	return &Service{
 		store: store,
@@ -11,6 +13,9 @@ type Service struct {
 }
 
 func (svc *Service) CreateComment(postId int64, payload *CreateCommentParam) error {
+	if err := validation.Validate.Struct(payload); err != nil {
+		return err
+	}
 	err := svc.store.CreateComment(postId, payload)
 	if err != nil {
 		return err
