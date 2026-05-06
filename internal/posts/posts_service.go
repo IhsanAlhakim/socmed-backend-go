@@ -34,8 +34,8 @@ func (svc *Service) GetPostById(postId int64) (*Post, error) {
 	return posts, nil
 }
 
-func (svc *Service) CreatePost(payload *CreatePostParam) error {
-	err := svc.store.Create(payload)
+func (svc *Service) CreatePost(userId int64, payload *CreatePostParam) error {
+	err := svc.store.CreatePost(userId, payload)
 	if err != nil {
 		return err
 	}
@@ -43,7 +43,7 @@ func (svc *Service) CreatePost(payload *CreatePostParam) error {
 }
 
 func (svc *Service) DeletePost(postId int64) error {
-	err := svc.store.Delete(postId)
+	err := svc.store.DeletePost(postId)
 	if err != nil {
 		return err
 	}

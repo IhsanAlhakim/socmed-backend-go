@@ -121,11 +121,6 @@ func (app *application) mount() http.Handler {
 	r.HandleFunc("POST /users", userHandler.CreateUser)
 	r.HandleFunc("POST /sessions", userHandler.SignIn)
 
-	/*
-		TODO :
-		- add input validation
-		- fix error handling (sql)
-	*/
 	// Endpoint with auth middleware
 	r.Route("/", func(r chi.Router) {
 		r.Use(m.Auth)
@@ -135,7 +130,7 @@ func (app *application) mount() http.Handler {
 		r.HandleFunc("DELETE /sessions", userHandler.SignOut)
 
 		r.HandleFunc("GET /posts", postHandler.GetPosts)
-		r.HandleFunc("GET /users/{userId}/followed-posts", postHandler.GetFollowedPosts)
+		r.HandleFunc("GET /users/followed-posts", postHandler.GetFollowedPosts)
 		r.HandleFunc("GET /posts/{id}", postHandler.GetPostById)
 		r.HandleFunc("POST /posts", postHandler.CreatePost)
 		r.HandleFunc("DELETE /posts/{id}", postHandler.DeletePost)

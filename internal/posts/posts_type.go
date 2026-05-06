@@ -4,15 +4,15 @@ import "time"
 
 // Interface
 type StoreInterface interface {
-	Create(payload *CreatePostParam) error
-	Delete(postId int64) error
+	CreatePost(userId int64, payload *CreatePostParam) error
+	DeletePost(postId int64) error
 	GetPosts() (*[]Post, error)
 	GetFollowedPosts(userId int64) (*[]Post, error)
 	GetById(postId int64) (*Post, error)
 }
 
 type ServiceInterface interface {
-	CreatePost(payload *CreatePostParam) error
+	CreatePost(userId int64, payload *CreatePostParam) error
 	GetPosts() (*[]Post, error)
 	GetFollowedPosts(userId int64) (*[]Post, error)
 	GetPostById(postId int64) (*Post, error)
@@ -30,7 +30,6 @@ type Post struct {
 }
 
 type CreatePostParam struct {
-	UserId  int64  `json:"user_id"`
-	Title   string `json:"title"`
-	Content string `json:"content"`
+	Title   string `json:"title" validate:"required"`
+	Content string `json:"content" validate:"required"`
 }

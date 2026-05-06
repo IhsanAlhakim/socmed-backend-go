@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/auth"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/httpjson"
 )
 
@@ -33,16 +34,14 @@ func (h *Handler) GetPosts(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetFollowedPosts(w http.ResponseWriter, r *http.Request) {
-	userId := r.PathValue("userId")
-
-	userIdInt, err := strconv.Atoi(userId)
+	userId, err := auth.GetJWTSub(r)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	posts, err := h.service.GetFollowedPosts(int64(userIdInt))
+	posts, err := h.service.GetFollowedPosts(int64(userId))
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -77,6 +76,13 @@ func (h *Handler) GetPostById(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
+	userId, err := auth.GetJWTSub(r)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	var payload CreatePostParam
 	if err := httpjson.Decode(r, &payload); err != nil {
 		log.Println(err)
@@ -88,7 +94,7 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.service.CreatePost(&payload)
+	err = h.service.CreatePost(int64(userId), &payload)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
