@@ -2,6 +2,8 @@ package auth
 
 import (
 	"errors"
+	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -18,6 +20,7 @@ var (
 var (
 	LOGIN_EXPIRATION_DURATION = time.Duration(1) * time.Hour
 	JWT_SIGNING_METHOD        = jwt.SigningMethodHS256
+	jwtContextKey             string
 )
 
 type JWTAuthenticator struct {
@@ -28,6 +31,8 @@ type JWTAuthenticator struct {
 }
 
 func NewJWTAuthenticator(issuer string, signKey string, contextKey string, tokenCookieName string) *JWTAuthenticator {
+	jwtContextKey = contextKey
+
 	return &JWTAuthenticator{
 		issuer:          issuer,
 		signKey:         signKey,
@@ -80,4 +85,13 @@ func (ja *JWTAuthenticator) VerifyToken(tokenString string) (jwt.Claims, error) 
 		return nil, err
 	}
 	return claims, nil
+}
+
+func GetJWTSub(r *http.Request) (int, error) {
+	userInfo := r.Context().Value(jwtContextKey).(jwt.MapClaims)
+	userId, err := strconv.Atoi(userInfo["sub"].(string))
+	if err != nil {
+		return 0, err
+	}
+	return userId, nil
 }

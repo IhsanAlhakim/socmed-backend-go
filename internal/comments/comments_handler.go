@@ -6,10 +6,9 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/auth"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/httpjson"
-	"github.com/IhsanAlhakim/socmed-backend-go/internal/middlewares"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/validation"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 func NewHandler(service ServiceInterface) *Handler {
@@ -31,8 +30,7 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userInfo := r.Context().Value(middlewares.ContextWithUserInfoKey).(jwt.MapClaims)
-	userId, err := strconv.Atoi(userInfo["sub"].(string))
+	userId, err := auth.GetJWTSub(r)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
