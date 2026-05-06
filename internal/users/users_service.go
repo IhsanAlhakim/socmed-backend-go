@@ -6,19 +6,18 @@ import (
 	"time"
 
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/auth"
-	"github.com/IhsanAlhakim/socmed-backend-go/internal/config"
 )
 
-func NewService(store StoreInterface, config *config.Config) ServiceInterface {
+func NewService(store StoreInterface, jwtAuth *auth.JWTAuthenticator) ServiceInterface {
 	return &Service{
-		store:  store,
-		config: config,
+		store:   store,
+		jwtAuth: jwtAuth,
 	}
 }
 
 type Service struct {
-	store  StoreInterface
-	config *config.Config
+	store   StoreInterface
+	jwtAuth *auth.JWTAuthenticator
 }
 
 func (svc *Service) SignIn(payload *SignInParam) (*http.Cookie, error) {
@@ -33,13 +32,13 @@ func (svc *Service) SignIn(payload *SignInParam) (*http.Cookie, error) {
 
 	userIdString := strconv.Itoa(int(user.ID))
 
-	token, err := auth.GenerateToken(userIdString, svc.config.AppName, svc.config.JWTSignKey)
+	token, err := svc.jwtAuth.GenerateToken(userIdString)
 	if err != nil {
 		return nil, err
 	}
 
 	cookie := &http.Cookie{
-		Name:     svc.config.TokenCookieName,
+		Name:     svc.jwtAuth.TokenCookieName,
 		Value:    token,
 		Expires:  time.Now().Add(time.Duration(1) * time.Hour),
 		HttpOnly: true,
@@ -51,7 +50,7 @@ func (svc *Service) SignIn(payload *SignInParam) (*http.Cookie, error) {
 
 func (svc *Service) SignOut() *http.Cookie {
 	cookie := &http.Cookie{
-		Name:    svc.config.TokenCookieName,
+		Name:    svc.jwtAuth.TokenCookieName,
 		Expires: time.Unix(0, 0),
 		MaxAge:  -1,
 	}

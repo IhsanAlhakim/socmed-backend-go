@@ -8,17 +8,15 @@ import (
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/auth"
 )
 
-var ContextWithUserInfoKey = "userInfo"
-
 func (m *Middleware) Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			storedToken, err := r.Cookie(m.config.TokenCookieName)
+			storedToken, err := r.Cookie(m.jwtAuth.TokenCookieName)
 			if err != nil {
 				http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 				return
 			}
-			claims, err := auth.VerifyToken(storedToken.Value, m.config.JWTSignKey)
+			claims, err := m.jwtAuth.VerifyToken(storedToken.Value)
 			if err != nil {
 				if errors.Is(err, auth.ErrInvalidSigningMethod) {
 					http.Error(w, "Invalid credentials", http.StatusUnauthorized)
@@ -27,7 +25,7 @@ func (m *Middleware) Auth(next http.Handler) http.Handler {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			ctx := context.WithValue(r.Context(), ContextWithUserInfoKey, claims)
+			ctx := context.WithValue(r.Context(), m.jwtAuth.ContextKey, claims)
 			r = r.WithContext(ctx)
 			next.ServeHTTP(w, r)
 		})

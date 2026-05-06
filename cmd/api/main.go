@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/auth"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/config"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/database"
 )
@@ -10,13 +11,20 @@ import (
 func main() {
 	cfg := config.Load()
 
+	jwtAuth := auth.NewJWTAuthenticator(
+		cfg.AppName,
+		cfg.JWTSignKey,
+		cfg.JWTContextKey,
+		cfg.TokenCookieName,
+	)
+
 	db, err := database.New(cfg.DBConfig)
 	if err != nil {
 		log.Fatal("Failed connecting to database: ", err)
 	}
 	defer db.Close()
 
-	app := newApp(db, cfg)
+	app := newApp(db, cfg, jwtAuth)
 
 	mux := app.mount()
 

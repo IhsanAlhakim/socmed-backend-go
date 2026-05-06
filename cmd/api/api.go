@@ -11,6 +11,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/auth"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/comments"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/config"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/env"
@@ -25,8 +26,17 @@ import (
 )
 
 type application struct {
-	db     *sql.DB
-	config *config.Config
+	db      *sql.DB
+	config  *config.Config
+	jwtAuth *auth.JWTAuthenticator
+}
+
+func newApp(db *sql.DB, config *config.Config, jwtAuth *auth.JWTAuthenticator) *application {
+	return &application{
+		db:      db,
+		config:  config,
+		jwtAuth: jwtAuth,
+	}
 }
 
 func (app *application) run(mux http.Handler) error {
@@ -68,17 +78,10 @@ func (app *application) run(mux http.Handler) error {
 	return nil
 }
 
-func newApp(db *sql.DB, config *config.Config) *application {
-	return &application{
-		db:     db,
-		config: config,
-	}
-}
-
 func (app *application) mount() http.Handler {
 	r := chi.NewRouter()
 
-	m := middlewares.New(app.config)
+	m := middlewares.New(app.jwtAuth)
 
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Logger)
@@ -91,10 +94,8 @@ func (app *application) mount() http.Handler {
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
-	// TODO : add CORS
-
 	userStore := users.NewStore(app.db)
-	userService := users.NewService(userStore, app.config)
+	userService := users.NewService(userStore, app.jwtAuth)
 	userHandler := users.NewHandler(userService)
 
 	postStore := posts.NewStore(app.db)
@@ -120,8 +121,11 @@ func (app *application) mount() http.Handler {
 	r.HandleFunc("POST /users", userHandler.CreateUser)
 	r.HandleFunc("POST /sessions", userHandler.SignIn)
 
-	// TODO : add input validation
-
+	/*
+		TODO :
+		- add input validation
+		- fix error handling (sql)
+	*/
 	// Endpoint with auth middleware
 	r.Route("/", func(r chi.Router) {
 		r.Use(m.Auth)

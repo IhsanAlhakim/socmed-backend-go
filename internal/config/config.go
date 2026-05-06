@@ -18,6 +18,7 @@ type Config struct {
 	DBConfig DBConfig
 
 	JWTSignKey      string
+	JWTContextKey   string
 	TokenCookieName string
 }
 
@@ -34,6 +35,7 @@ func Load() *Config {
 			DbDriver: env.GetString("DB_DRIVER", "pgx"),
 		},
 		JWTSignKey:      env.GetString("JWT_SIGNATURE_KEY", "very-secret-key"),
+		JWTContextKey:   env.GetString("JWT_CONTEXT_KEY", "userInfo"),
 		TokenCookieName: env.GetString("TOKEN_COOKIE_NAME", "cookie-token-name"),
 	}
 }

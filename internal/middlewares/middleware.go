@@ -1,11 +1,13 @@
 package middlewares
 
-import "github.com/IhsanAlhakim/socmed-backend-go/internal/config"
+import (
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/auth"
+)
 
 type Middleware struct {
-	config *config.Config
+	jwtAuth *auth.JWTAuthenticator
 }
 
-func New(config *config.Config) *Middleware {
-	return &Middleware{config: config}
+func New(jwtAuth *auth.JWTAuthenticator) *Middleware {
+	return &Middleware{jwtAuth: jwtAuth}
 }

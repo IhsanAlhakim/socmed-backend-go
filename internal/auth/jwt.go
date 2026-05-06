@@ -20,11 +20,27 @@ var (
 	JWT_SIGNING_METHOD        = jwt.SigningMethodHS256
 )
 
-func GenerateToken(userId string, issuer string, JWTSignKey string) (string, error) {
+type JWTAuthenticator struct {
+	issuer          string
+	signKey         string
+	TokenCookieName string
+	ContextKey      string
+}
+
+func NewJWTAuthenticator(issuer string, signKey string, contextKey string, tokenCookieName string) *JWTAuthenticator {
+	return &JWTAuthenticator{
+		issuer:          issuer,
+		signKey:         signKey,
+		ContextKey:      contextKey,
+		TokenCookieName: tokenCookieName,
+	}
+}
+
+func (ja *JWTAuthenticator) GenerateToken(userId string) (string, error) {
 	claims := MyClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			Subject:   userId,
-			Issuer:    issuer,
+			Issuer:    ja.issuer,
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(LOGIN_EXPIRATION_DURATION)),
 		},
 	}
@@ -34,16 +50,16 @@ func GenerateToken(userId string, issuer string, JWTSignKey string) (string, err
 		claims,
 	)
 
-	jwtSignKeyByte := []byte(JWTSignKey)
+	signKeyByte := []byte(ja.signKey)
 
-	signedToken, err := token.SignedString(jwtSignKeyByte)
+	signedToken, err := token.SignedString(signKeyByte)
 	if err != nil {
 		return "", err
 	}
 	return signedToken, nil
 }
 
-func VerifyToken(tokenString string, JWTSignKey string) (jwt.Claims, error) {
+func (ja *JWTAuthenticator) VerifyToken(tokenString string) (jwt.Claims, error) {
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (any, error) {
 		if method, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, ErrInvalidSigningMethod
@@ -51,8 +67,8 @@ func VerifyToken(tokenString string, JWTSignKey string) (jwt.Claims, error) {
 			return nil, ErrInvalidSigningMethod
 		}
 
-		jwtSignKeyByte := []byte(JWTSignKey)
-		return jwtSignKeyByte, nil
+		signKeyByte := []byte(ja.signKey)
+		return signKeyByte, nil
 	})
 
 	if err != nil {
