@@ -1,12 +1,14 @@
 package posts
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/auth"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/httpjson"
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/validation"
 )
 
 func NewHandler(service ServiceInterface) *Handler {
@@ -97,7 +99,11 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	err = h.service.CreatePost(int64(userId), &payload)
 	if err != nil {
 		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		if errors.As(err, &validation.ErrValidation) {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 

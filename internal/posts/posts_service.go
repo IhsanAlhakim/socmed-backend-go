@@ -1,5 +1,7 @@
 package posts
 
+import "github.com/IhsanAlhakim/socmed-backend-go/internal/validation"
+
 func NewService(store StoreInterface) ServiceInterface {
 	return &Service{
 		store: store,
@@ -35,6 +37,10 @@ func (svc *Service) GetPostById(postId int64) (*Post, error) {
 }
 
 func (svc *Service) CreatePost(userId int64, payload *CreatePostParam) error {
+	if err := validation.Validate.Struct(payload); err != nil {
+		return err
+	}
+
 	err := svc.store.CreatePost(userId, payload)
 	if err != nil {
 		return err
