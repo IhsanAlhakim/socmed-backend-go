@@ -125,8 +125,8 @@ func (app *application) mount() http.Handler {
 	r.Route("/", func(r chi.Router) {
 		r.Use(m.Auth)
 
-		r.HandleFunc("PUT /users/{id}", userHandler.UpdateUser)
-		r.HandleFunc("DELETE /users/{id}", userHandler.DeleteUser)
+		r.HandleFunc("PUT /users", userHandler.UpdateUser)
+		r.HandleFunc("DELETE /users", userHandler.DeleteUser)
 		r.HandleFunc("DELETE /sessions", userHandler.SignOut)
 
 		r.HandleFunc("GET /posts", postHandler.GetPosts)

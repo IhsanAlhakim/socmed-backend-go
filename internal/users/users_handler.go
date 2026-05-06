@@ -5,8 +5,8 @@ import (
 	"errors"
 	"log"
 	"net/http"
-	"strconv"
 
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/auth"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/httpjson"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/validation"
 	"golang.org/x/crypto/bcrypt"
@@ -93,8 +93,12 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
-	userId := r.PathValue("id")
-	userIdInt, err := strconv.Atoi(userId)
+	userId, err := auth.GetJWTSub(r)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	var payload UpdateUserParam
 	if err := httpjson.Decode(r, &payload); err != nil {
@@ -107,7 +111,7 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.service.UpdateUser(int64(userIdInt), &payload)
+	err = h.service.UpdateUser(int64(userId), &payload)
 	if err != nil {
 		log.Println(err)
 		if errors.As(err, &validation.ErrValidation) {
@@ -124,15 +128,14 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) DeleteUser(w http.ResponseWriter, r *http.Request) {
-	userId := r.PathValue("id")
-	userIdInt, err := strconv.Atoi(userId)
+	userId, err := auth.GetJWTSub(r)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	err = h.service.DeleteUser(int64(userIdInt))
+	err = h.service.DeleteUser(int64(userId))
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
