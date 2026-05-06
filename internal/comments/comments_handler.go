@@ -33,6 +33,11 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 
 	userInfo := r.Context().Value(middlewares.ContextWithUserInfoKey).(jwt.MapClaims)
 	userId, err := strconv.Atoi(userInfo["sub"].(string))
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	var payload CreateCommentParam
 	if err := httpjson.Decode(r, &payload); err != nil {
