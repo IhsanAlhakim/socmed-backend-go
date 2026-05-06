@@ -2,11 +2,13 @@ package users
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/httpjson"
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/validation"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -38,6 +40,8 @@ func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "user not found", http.StatusNotFound)
 		} else if err == bcrypt.ErrMismatchedHashAndPassword {
 			http.Error(w, "invalid credentials", http.StatusUnauthorized)
+		} else if errors.As(err, &validation.ErrValidation) {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 		} else {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
@@ -75,7 +79,11 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	err := h.service.CreateUser(&payload)
 	if err != nil {
 		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		if errors.As(err, &validation.ErrValidation) {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 
@@ -102,7 +110,11 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	err = h.service.UpdateUser(int64(userIdInt), &payload)
 	if err != nil {
 		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		if errors.As(err, &validation.ErrValidation) {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 

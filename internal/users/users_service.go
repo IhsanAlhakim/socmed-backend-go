@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/auth"
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/validation"
 )
 
 func NewService(store StoreInterface, jwtAuth *auth.JWTAuthenticator) ServiceInterface {
@@ -21,6 +22,10 @@ type Service struct {
 }
 
 func (svc *Service) SignIn(payload *SignInParam) (*http.Cookie, error) {
+	if err := validation.Validate.Struct(payload); err != nil {
+		return nil, err
+	}
+
 	user, err := svc.store.GetUserByEmail(payload.Email)
 	if err != nil {
 		return nil, err
@@ -58,7 +63,9 @@ func (svc *Service) SignOut() *http.Cookie {
 }
 
 func (svc *Service) CreateUser(payload *CreateUserParam) error {
-	// input validation
+	if err := validation.Validate.Struct(payload); err != nil {
+		return err
+	}
 
 	// hash password
 	hashedPassword, err := auth.GenerateHashPassword(payload.Password)
@@ -76,6 +83,10 @@ func (svc *Service) CreateUser(payload *CreateUserParam) error {
 }
 
 func (svc *Service) UpdateUser(userId int64, payload *UpdateUserParam) error {
+	if err := validation.Validate.Struct(payload); err != nil {
+		return err
+	}
+
 	err := svc.store.UpdateUser(userId, payload)
 	if err != nil {
 		return err
