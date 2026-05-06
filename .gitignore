@@ -34,3 +34,6 @@ go.work.sum
 # air
 .air.toml
 tmp
+
+# txt
+*.txt
