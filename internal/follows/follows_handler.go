@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/auth"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/httpjson"
 )
 
@@ -61,8 +62,7 @@ func (h *Handler) GetFollowed(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Follow(w http.ResponseWriter, r *http.Request) {
-	userId := r.PathValue("userId")
-	userIdInt, err := strconv.Atoi(userId)
+	userId, err := auth.GetJWTSub(r)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -80,7 +80,7 @@ func (h *Handler) Follow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.service.Follow(int64(userIdInt), &payload)
+	err = h.service.Follow(int64(userId), &payload)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -93,8 +93,7 @@ func (h *Handler) Follow(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Unfollow(w http.ResponseWriter, r *http.Request) {
-	userId := r.PathValue("userId")
-	userIdInt, err := strconv.Atoi(userId)
+	userId, err := auth.GetJWTSub(r)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -112,7 +111,7 @@ func (h *Handler) Unfollow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.service.Unfollow(int64(userIdInt), &payload)
+	err = h.service.Unfollow(int64(userId), &payload)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
