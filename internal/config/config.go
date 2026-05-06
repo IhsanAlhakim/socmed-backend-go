@@ -8,8 +8,11 @@ import (
 )
 
 type DBConfig struct {
-	Dsn      string
-	DbDriver string
+	Dsn          string
+	DbDriver     string
+	MaxOpenConns int
+	MaxIdleConns int
+	MaxIdleTime  string
 }
 
 type Config struct {
@@ -31,8 +34,11 @@ func Load() *Config {
 		AppName: env.GetString("APPNAME", "socmed"),
 		Port:    env.GetString("PORT", "8000"),
 		DBConfig: DBConfig{
-			Dsn:      env.GetString("DSN", "postgres://postgres:admin123@localhost:5432/socmed"),
-			DbDriver: env.GetString("DB_DRIVER", "pgx"),
+			Dsn:          env.GetString("DSN", "postgres://postgres:admin123@localhost:5432/socmed"),
+			DbDriver:     env.GetString("DB_DRIVER", "pgx"),
+			MaxOpenConns: env.GetInt("DB_MAX_OPEN_CONNS", 30),
+			MaxIdleConns: env.GetInt("DB_MAX_IDLE_CONNS", 30),
+			MaxIdleTime:  env.GetString("DB_MAX_IDLE_TIME", "15m"),
 		},
 		JWTSignKey:      env.GetString("JWT_SIGNATURE_KEY", "very-secret-key"),
 		JWTContextKey:   env.GetString("JWT_CONTEXT_KEY", "userInfo"),
