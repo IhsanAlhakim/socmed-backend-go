@@ -25,5 +25,5 @@ type Follow struct {
 }
 
 type FollowParam struct {
-	FollowedId int64 `json:"followed_id"`
+	FollowedId int64 `json:"followed_id" validate:"required"`
 }
