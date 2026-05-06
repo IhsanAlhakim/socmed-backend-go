@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/auth"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/httpjson"
 )
 
@@ -27,18 +28,14 @@ func (h *Handler) LikePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var payload PostLikeParam
-	if err := httpjson.Decode(r, &payload); err != nil {
+	userId, err := auth.GetJWTSub(r)
+	if err != nil {
 		log.Println(err)
-		if err == httpjson.ErrEmptyBody {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		} else {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	err = h.service.LikePost(int64(postIdInt), &payload)
+	err = h.service.LikePost(int64(postIdInt), int64(userId))
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -59,18 +56,14 @@ func (h *Handler) UnlikePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var payload PostLikeParam
-	if err := httpjson.Decode(r, &payload); err != nil {
+	userId, err := auth.GetJWTSub(r)
+	if err != nil {
 		log.Println(err)
-		if err == httpjson.ErrEmptyBody {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		} else {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	err = h.service.UnlikePost(int64(postIdInt), &payload)
+	err = h.service.UnlikePost(int64(postIdInt), int64(userId))
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

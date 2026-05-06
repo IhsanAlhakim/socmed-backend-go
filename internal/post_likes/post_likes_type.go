@@ -2,14 +2,14 @@ package plikes
 
 // Interface
 type StoreInterface interface {
-	LikePost(postId int64, payload *PostLikeParam) error
-	UnlikePost(postId int64, payload *PostLikeParam) error
+	LikePost(postId int64, userId int64) error
+	UnlikePost(postId int64, userId int64) error
 	GetPostLiker(postId int64) (*[]PostLike, error)
 }
 
 type ServiceInterface interface {
-	LikePost(postId int64, payload *PostLikeParam) error
-	UnlikePost(postId int64, payload *PostLikeParam) error
+	LikePost(postId int64, userId int64) error
+	UnlikePost(postId int64, userId int64) error
 	GetPostLiker(postId int64) (*[]PostLike, error)
 }
 
@@ -19,8 +19,4 @@ type PostLike struct {
 	PostId   int64  `json:"post_id,omitempty"`
 	UserId   int64  `json:"user_id,omitempty"`
 	Username string `json:"username,omitempty"`
-}
-
-type PostLikeParam struct {
-	UserId int64 `json:"user_id,omitempty"`
 }
