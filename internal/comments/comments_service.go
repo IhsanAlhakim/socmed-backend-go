@@ -12,11 +12,11 @@ type Service struct {
 	store StoreInterface
 }
 
-func (svc *Service) CreateComment(postId int64, payload *CreateCommentParam) error {
+func (svc *Service) CreateComment(userId int64, postId int64, payload *CreateCommentParam) error {
 	if err := validation.Validate.Struct(payload); err != nil {
 		return err
 	}
-	err := svc.store.CreateComment(postId, payload)
+	err := svc.store.CreateComment(userId, postId, payload)
 	if err != nil {
 		return err
 	}

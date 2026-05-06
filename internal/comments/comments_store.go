@@ -12,13 +12,13 @@ type PostgresStore struct {
 	db *sql.DB
 }
 
-func (pgs *PostgresStore) CreateComment(postId int64, payload *CreateCommentParam) error {
+func (pgs *PostgresStore) CreateComment(userId int64, postId int64, payload *CreateCommentParam) error {
 	query := `
 	INSERT INTO comments (user_id, post_id, content)
 	VALUES ($1, $2, $3)
 	`
 
-	_, err := pgs.db.Exec(query, payload.UserId, postId, payload.Content)
+	_, err := pgs.db.Exec(query, userId, postId, payload.Content)
 
 	if err != nil {
 		return err
