@@ -21,6 +21,14 @@ type Service struct {
 	jwtAuth *auth.JWTAuthenticator
 }
 
+func (svc *Service) GetUserById(userId int64) (*User, error) {
+	user, err := svc.store.GetUserById(userId)
+	if err != nil {
+		return &User{}, err
+	}
+	return user, nil
+}
+
 func (svc *Service) SignIn(payload *SignInParam) (*http.Cookie, error) {
 	if err := validation.Validate.Struct(payload); err != nil {
 		return nil, err

@@ -11,6 +11,7 @@ type StoreInterface interface {
 	UpdateUser(userId int64, payload *UpdateUserParam) error
 	DeleteUser(userId int64) error
 	GetUserByEmail(email string) (*User, error)
+	GetUserById(userId int64) (*User, error)
 }
 
 type ServiceInterface interface {
@@ -19,6 +20,7 @@ type ServiceInterface interface {
 	DeleteUser(userId int64) error
 	SignIn(payload *SignInParam) (*http.Cookie, error)
 	SignOut() *http.Cookie
+	GetUserById(userId int64) (*User, error)
 }
 
 // Struct
@@ -27,7 +29,7 @@ type User struct {
 	Username string    `json:"username,omitempty"`
 	Email    string    `json:"email,omitempty"`
 	Password string    `json:"password,omitempty"`
-	CreateAt time.Time `json:"created_at,omitempty"`
+	CreateAt time.Time `json:"created_at"`
 }
 
 type CreateUserParam struct {

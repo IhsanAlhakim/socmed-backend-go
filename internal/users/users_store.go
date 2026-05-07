@@ -12,6 +12,24 @@ type PostgresStore struct {
 	db *sql.DB
 }
 
+func (pgs *PostgresStore) GetUserById(userId int64) (*User, error) {
+
+	query := `
+	SELECT id, username, email, created_at
+	FROM users
+	WHERE id = $1
+	`
+
+	var result User
+
+	err := pgs.db.QueryRow(query, userId).Scan(&result.ID, &result.Username, &result.Email, &result.CreateAt)
+	if err != nil {
+		return &User{}, err
+	}
+
+	return &result, nil
+}
+
 func (pgs *PostgresStore) GetUserByEmail(email string) (*User, error) {
 
 	query := `

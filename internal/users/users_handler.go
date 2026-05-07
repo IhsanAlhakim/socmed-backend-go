@@ -22,6 +22,25 @@ type Handler struct {
 	service ServiceInterface
 }
 
+func (h *Handler) GetUserById(w http.ResponseWriter, r *http.Request) {
+	userId, err := auth.GetJWTSub(r)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	user, err := h.service.GetUserById(int64(userId))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	httpjson.Respond(w, httpjson.ResponseBody{
+		Data: user,
+	}, http.StatusOK)
+}
+
 func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 	var payload SignInParam
 	if err := httpjson.Decode(r, &payload); err != nil {
