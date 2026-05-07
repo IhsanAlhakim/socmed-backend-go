@@ -28,6 +28,14 @@ func (svc *Service) GetFollowedPosts(userId int64) (*[]Post, error) {
 	return posts, nil
 }
 
+func (svc *Service) GetLikedPosts(userId int64) (*[]Post, error) {
+	posts, err := svc.store.GetLikedPosts(userId)
+	if err != nil {
+		return nil, err
+	}
+	return posts, nil
+}
+
 func (svc *Service) GetPostById(postId int64) (*Post, error) {
 	posts, err := svc.store.GetById(postId)
 	if err != nil {

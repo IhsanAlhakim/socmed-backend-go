@@ -121,3 +121,35 @@ func (pgs *PostgresStore) GetById(postId int64) (*Post, error) {
 
 	return &result, nil
 }
+
+func (pgs *PostgresStore) GetLikedPosts(userId int64) (*[]Post, error) {
+
+	query := `
+	SELECT p.id, u.username as creator, p.title, p.content, p.created_at
+	FROM posts p
+	JOIN users u ON p.user_id = u.id
+	WHERE p.id IN (SELECT post_id from post_likes WHERE user_id = $1)
+	`
+	rows, err := pgs.db.Query(query, userId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []Post
+
+	for rows.Next() {
+		var each Post
+		err := rows.Scan(&each.ID, &each.Creator, &each.Title, &each.Content, &each.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, each)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}

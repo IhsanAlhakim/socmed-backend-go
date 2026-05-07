@@ -55,6 +55,26 @@ func (h *Handler) GetFollowedPosts(w http.ResponseWriter, r *http.Request) {
 	}, http.StatusOK)
 }
 
+func (h *Handler) GetLikedPosts(w http.ResponseWriter, r *http.Request) {
+	userId, err := auth.GetJWTSub(r)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	posts, err := h.service.GetLikedPosts(int64(userId))
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	httpjson.Respond(w, httpjson.ResponseBody{
+		Data: posts,
+	}, http.StatusOK)
+}
+
 func (h *Handler) GetPostById(w http.ResponseWriter, r *http.Request) {
 	postId := r.PathValue("id")
 
