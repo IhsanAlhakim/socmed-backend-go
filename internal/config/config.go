@@ -16,8 +16,11 @@ type DBConfig struct {
 }
 
 type Config struct {
-	AppName  string
-	Port     string
+	AppName string
+	Port    string
+
+	AllowedOrigin string
+
 	DBConfig DBConfig
 
 	JWTSignKey      string
@@ -31,8 +34,9 @@ func Load() *Config {
 	}
 
 	return &Config{
-		AppName: env.GetString("APPNAME", "socmed"),
-		Port:    env.GetString("PORT", "8000"),
+		AppName:       env.GetString("APPNAME", "socmed"),
+		Port:          env.GetString("PORT", "8000"),
+		AllowedOrigin: env.GetString("ALLOWED_ORIGIN", "http://localhost:5173"),
 		DBConfig: DBConfig{
 			Dsn:          env.GetString("DSN", "postgres://postgres:admin123@localhost:5432/socmed"),
 			DbDriver:     env.GetString("DB_DRIVER", "pgx"),

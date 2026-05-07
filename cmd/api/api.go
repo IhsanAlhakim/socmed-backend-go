@@ -14,7 +14,6 @@ import (
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/auth"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/comments"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/config"
-	"github.com/IhsanAlhakim/socmed-backend-go/internal/env"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/follows"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/middlewares"
 	plikes "github.com/IhsanAlhakim/socmed-backend-go/internal/post_likes"
@@ -87,7 +86,7 @@ func (app *application) mount() http.Handler {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{env.GetString("ALLOWED_ORIGIN", "http://localhost:5173")},
+		AllowedOrigins:   []string{app.config.AllowedOrigin},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		AllowCredentials: true,
