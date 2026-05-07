@@ -33,3 +33,11 @@ func (svc *Service) GetPostLiker(postId int64) (*[]PostLike, error) {
 	}
 	return postLiker, nil
 }
+
+func (svc *Service) GetPostLikesCount(postId int64) (*PostLikesCount, error) {
+	postLikesCount, err := svc.store.GetPostLikesCount(postId)
+	if err != nil {
+		return nil, err
+	}
+	return postLikesCount, nil
+}

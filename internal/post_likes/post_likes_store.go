@@ -72,3 +72,20 @@ func (pgs *PostgresStore) GetPostLiker(postId int64) (*[]PostLike, error) {
 
 	return &result, nil
 }
+
+func (pgs *PostgresStore) GetPostLikesCount(postId int64) (*PostLikesCount, error) {
+	query := `
+	SELECT COUNT(user_id) 
+	FROM post_likes
+	WHERE post_id = $1
+	`
+
+	var result PostLikesCount
+
+	err := pgs.db.QueryRow(query, postId).Scan(&result.LikesCount)
+	if err != nil {
+		return &PostLikesCount{}, err
+	}
+
+	return &result, nil
+}

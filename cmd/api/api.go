@@ -148,6 +148,7 @@ func (app *application) mount() http.Handler {
 		r.HandleFunc("POST /posts/{postId}/likes", postLikesHandler.LikePost)
 		r.HandleFunc("DELETE /posts/{postId}/likes", postLikesHandler.UnlikePost)
 		r.HandleFunc("GET /posts/{postId}/likes", postLikesHandler.GetPostLiker)
+		r.HandleFunc("GET /posts/{postId}/likes/count", postLikesHandler.GetPostLikesCount)
 	})
 
 	return r

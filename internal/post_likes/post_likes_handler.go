@@ -95,3 +95,24 @@ func (h *Handler) GetPostLiker(w http.ResponseWriter, r *http.Request) {
 		Data: follower,
 	}, http.StatusOK)
 }
+
+func (h *Handler) GetPostLikesCount(w http.ResponseWriter, r *http.Request) {
+	postId := r.PathValue("postId")
+	postIdInt, err := strconv.Atoi(postId)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	postLikesCount, err := h.service.GetPostLikesCount(int64(postIdInt))
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	httpjson.Respond(w, httpjson.ResponseBody{
+		Data: postLikesCount,
+	}, http.StatusOK)
+}
