@@ -170,8 +170,12 @@ func (h *Handler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	err = h.service.DeleteUser(int64(userId))
 	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		if err == ErrUserNotFound {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 

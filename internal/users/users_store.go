@@ -117,9 +117,18 @@ func (pgs *PostgresStore) DeleteUser(userId int64) error {
 	DELETE FROM users 
 	WHERE id = $1
 	`
-	_, err := pgs.db.Exec(query, userId)
+	result, err := pgs.db.Exec(query, userId)
 	if err != nil {
 		return err
+	}
+
+	count, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if count == 0 {
+		return ErrUserNotFound
 	}
 
 	return nil
