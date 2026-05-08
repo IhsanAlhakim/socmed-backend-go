@@ -47,7 +47,11 @@ func (pgs *PostgresStore) GetUserByEmail(email string) (*User, error) {
 
 	err := pgs.db.QueryRow(query, email).Scan(&result.ID, &result.Password)
 	if err != nil {
-		return &User{}, err
+		if err == sql.ErrNoRows {
+			return &User{}, ErrUserNotFound
+		} else {
+			return &User{}, err
+		}
 	}
 
 	return &result, nil

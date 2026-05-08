@@ -1,7 +1,6 @@
 package users
 
 import (
-	"database/sql"
 	"errors"
 	"log"
 	"net/http"
@@ -9,7 +8,6 @@ import (
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/auth"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/httpjson"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/validation"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func NewHandler(service ServiceInterface) *Handler {
@@ -25,7 +23,7 @@ type Handler struct {
 func (h *Handler) GetUserById(w http.ResponseWriter, r *http.Request) {
 	userId, err := auth.GetJWTSub(r)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -35,7 +33,7 @@ func (h *Handler) GetUserById(w http.ResponseWriter, r *http.Request) {
 		if err == ErrUserNotFound {
 			http.Error(w, err.Error(), http.StatusNotFound)
 		} else {
-			log.Println(err.Error())
+			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return
@@ -49,24 +47,27 @@ func (h *Handler) GetUserById(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 	var payload SignInParam
 	if err := httpjson.Decode(r, &payload); err != nil {
-		log.Println(err)
 		if err == httpjson.ErrEmptyBody {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		} else {
+			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return
 	}
 
 	cookie, err := h.service.SignIn(&payload)
+
 	if err != nil {
-		if err == sql.ErrNoRows {
-			http.Error(w, "user not found", http.StatusNotFound)
-		} else if err == bcrypt.ErrMismatchedHashAndPassword {
-			http.Error(w, "invalid credentials", http.StatusUnauthorized)
-		} else if errors.As(err, &validation.ErrValidation) {
+		switch {
+		case err == ErrUserNotFound:
+			http.Error(w, err.Error(), http.StatusNotFound)
+		case err == auth.ErrInvalidPassword:
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+		case errors.As(err, &validation.ErrValidation):
 			http.Error(w, err.Error(), http.StatusBadRequest)
-		} else {
+		default:
+			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return
@@ -94,7 +95,7 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		if err == httpjson.ErrEmptyBody {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		} else {
-			log.Println(err.Error())
+			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return
@@ -105,7 +106,7 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		if errors.As(err, &validation.ErrValidation) || err == ErrDuplicateEmail || err == ErrDuplicateUsername {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		} else {
-			log.Println(err.Error())
+			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return
