@@ -9,7 +9,6 @@ import (
 
 type DBConfig struct {
 	Dsn          string
-	DbDriver     string
 	MaxOpenConns int
 	MaxIdleConns int
 	MaxIdleTime  string
@@ -39,7 +38,6 @@ func Load() *Config {
 		AllowedOrigin: env.GetString("ALLOWED_ORIGIN", "http://localhost:5173"),
 		DBConfig: DBConfig{
 			Dsn:          env.GetString("DSN", "postgres://postgres:admin123@localhost:5432/socmed"),
-			DbDriver:     env.GetString("DB_DRIVER", "pgx"),
 			MaxOpenConns: env.GetInt("DB_MAX_OPEN_CONNS", 30),
 			MaxIdleConns: env.GetInt("DB_MAX_IDLE_CONNS", 30),
 			MaxIdleTime:  env.GetString("DB_MAX_IDLE_TIME", "15m"),
