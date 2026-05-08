@@ -103,9 +103,12 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	err := h.service.CreateUser(&payload)
 	if err != nil {
-		if errors.As(err, &validation.ErrValidation) || err == ErrDuplicateEmail || err == ErrDuplicateUsername {
+		switch {
+		case errors.As(err, &validation.ErrValidation):
 			http.Error(w, err.Error(), http.StatusBadRequest)
-		} else {
+		case err == ErrDuplicateEmail || err == ErrDuplicateUsername:
+			http.Error(w, err.Error(), http.StatusConflict)
+		default:
 			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
