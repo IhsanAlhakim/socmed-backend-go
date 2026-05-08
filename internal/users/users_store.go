@@ -86,9 +86,26 @@ func (pgs *PostgresStore) UpdateUser(userId int64, payload *UpdateUserParam) err
 	SET username = $1, email = $2 
 	WHERE id = $3
 	`
-	_, err := pgs.db.Exec(query, payload.Username, payload.Email, userId)
+	result, err := pgs.db.Exec(query, payload.Username, payload.Email, userId)
+
+	if err != nil {
+		switch {
+		case strings.Contains(err.Error(), `duplicate key value violates unique constraint "users_username_key"`):
+			return ErrDuplicateUsername
+		case strings.Contains(err.Error(), `duplicate key value violates unique constraint "users_email_key"`):
+			return ErrDuplicateEmail
+		default:
+			return err
+		}
+	}
+
+	count, err := result.RowsAffected()
 	if err != nil {
 		return err
+	}
+
+	if count == 0 {
+		return ErrUserNotFound
 	}
 
 	return nil

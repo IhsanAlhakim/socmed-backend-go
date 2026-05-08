@@ -130,10 +130,10 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	var payload UpdateUserParam
 	if err := httpjson.Decode(r, &payload); err != nil {
-		log.Println(err)
 		if err == httpjson.ErrEmptyBody {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		} else {
+			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return
@@ -141,10 +141,15 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	err = h.service.UpdateUser(int64(userId), &payload)
 	if err != nil {
-		log.Println(err)
-		if errors.As(err, &validation.ErrValidation) {
+		switch {
+		case err == ErrUserNotFound:
+			http.Error(w, err.Error(), http.StatusNotFound)
+		case errors.As(err, &validation.ErrValidation):
 			http.Error(w, err.Error(), http.StatusBadRequest)
-		} else {
+		case err == ErrDuplicateEmail || err == ErrDuplicateUsername:
+			http.Error(w, err.Error(), http.StatusConflict)
+		default:
+			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return
