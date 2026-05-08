@@ -2,6 +2,7 @@ package users
 
 import (
 	"database/sql"
+	"strings"
 )
 
 func NewStore(db *sql.DB) StoreInterface {
@@ -57,7 +58,14 @@ func (pgs *PostgresStore) CreateUser(user *CreateUserParam) error {
 	_, err := pgs.db.Exec(query, user.Username, user.Password, user.Email)
 
 	if err != nil {
-		return err
+		switch {
+		case strings.Contains(err.Error(), `duplicate key value violates unique constraint "users_username_key"`):
+			return ErrDuplicateUsername
+		case strings.Contains(err.Error(), `duplicate key value violates unique constraint "users_email_key"`):
+			return ErrDuplicateEmail
+		default:
+			return err
+		}
 	}
 
 	return nil

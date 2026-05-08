@@ -86,10 +86,10 @@ func (h *Handler) SignOut(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var payload CreateUserParam
 	if err := httpjson.Decode(r, &payload); err != nil {
-		log.Println(err)
 		if err == httpjson.ErrEmptyBody {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		} else {
+			log.Println(err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return
@@ -97,10 +97,10 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	err := h.service.CreateUser(&payload)
 	if err != nil {
-		log.Println(err)
-		if errors.As(err, &validation.ErrValidation) {
+		if errors.As(err, &validation.ErrValidation) || err == ErrDuplicateEmail || err == ErrDuplicateUsername {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		} else {
+			log.Println(err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return
