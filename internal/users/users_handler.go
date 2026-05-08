@@ -25,14 +25,19 @@ type Handler struct {
 func (h *Handler) GetUserById(w http.ResponseWriter, r *http.Request) {
 	userId, err := auth.GetJWTSub(r)
 	if err != nil {
-		log.Println(err)
+		log.Println(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	user, err := h.service.GetUserById(int64(userId))
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		if err == ErrUserNotFound {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			log.Println(err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 

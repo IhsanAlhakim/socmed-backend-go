@@ -25,7 +25,11 @@ func (pgs *PostgresStore) GetUserById(userId int64) (*User, error) {
 
 	err := pgs.db.QueryRow(query, userId).Scan(&result.ID, &result.Username, &result.Email, &result.CreateAt)
 	if err != nil {
-		return &User{}, err
+		if err == sql.ErrNoRows {
+			return &User{}, ErrUserNotFound
+		} else {
+			return &User{}, err
+		}
 	}
 
 	return &result, nil
