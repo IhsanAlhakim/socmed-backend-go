@@ -64,7 +64,7 @@ func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusNotFound)
 		case err == auth.ErrInvalidPassword:
 			http.Error(w, err.Error(), http.StatusUnauthorized)
-		case errors.As(err, &validation.ErrValidation):
+		case validation.IsErrValidation(err):
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		default:
 			log.Println(err)
