@@ -19,15 +19,15 @@ func (ve *ValidationError) Add(err string) {
 	ve.errorList = append(ve.errorList, err)
 }
 
-func NewError(err error) *ValidationError {
+func NewError(err error) error {
 	ValidationErrors := &ValidationError{}
-	errorItem, ok := err.(validator.ValidationErrors)
+	errorList, ok := err.(validator.ValidationErrors) // comma ok idiom
 	if !ok {
 		ValidationErrors.Add("validation error")
 		return ValidationErrors
 	}
 
-	for _, err := range errorItem {
+	for _, err := range errorList {
 		switch err.Tag() {
 		case "required":
 			ValidationErrors.Add(fmt.Sprintf("%s is required", err.Field()))
@@ -38,4 +38,11 @@ func NewError(err error) *ValidationError {
 		}
 	}
 	return ValidationErrors
+}
+
+func IsErrValidation(err error) bool {
+	if _, ok := err.(*ValidationError); !ok {
+		return false
+	}
+	return true
 }
