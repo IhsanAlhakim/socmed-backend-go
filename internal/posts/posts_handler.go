@@ -87,8 +87,12 @@ func (h *Handler) GetPostById(w http.ResponseWriter, r *http.Request) {
 
 	post, err := h.service.GetPostById(int64(postIdInt))
 	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		if err == ErrPostNotFound {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 

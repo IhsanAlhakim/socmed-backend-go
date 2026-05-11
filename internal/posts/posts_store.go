@@ -116,6 +116,9 @@ func (pgs *PostgresStore) GetById(postId int64) (*Post, error) {
 
 	err := pgs.db.QueryRow(query, postId).Scan(&result.ID, &result.Title, &result.UserId, &result.Content, &result.CreatedAt)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return &Post{}, ErrPostNotFound
+		}
 		return &Post{}, err
 	}
 
