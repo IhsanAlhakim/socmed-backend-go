@@ -72,7 +72,7 @@ func (svc *Service) SignOut() *http.Cookie {
 
 func (svc *Service) CreateUser(payload *CreateUserParam) error {
 	if err := validation.Validate.Struct(payload); err != nil {
-		return err
+		return validation.NewError(err)
 	}
 
 	// hash password
@@ -92,7 +92,7 @@ func (svc *Service) CreateUser(payload *CreateUserParam) error {
 
 func (svc *Service) UpdateUser(userId int64, payload *UpdateUserParam) error {
 	if err := validation.Validate.Struct(payload); err != nil {
-		return err
+		return validation.NewError(err)
 	}
 
 	err := svc.store.UpdateUser(userId, payload)

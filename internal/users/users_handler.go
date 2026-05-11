@@ -1,7 +1,6 @@
 package users
 
 import (
-	"errors"
 	"log"
 	"net/http"
 
@@ -104,7 +103,7 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	err := h.service.CreateUser(&payload)
 	if err != nil {
 		switch {
-		case errors.As(err, &validation.ErrValidation):
+		case validation.IsErrValidation(err):
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		case err == ErrDuplicateEmail || err == ErrDuplicateUsername:
 			http.Error(w, err.Error(), http.StatusConflict)
@@ -144,7 +143,7 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case err == ErrUserNotFound:
 			http.Error(w, err.Error(), http.StatusNotFound)
-		case errors.As(err, &validation.ErrValidation):
+		case validation.IsErrValidation(err):
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		case err == ErrDuplicateEmail || err == ErrDuplicateUsername:
 			http.Error(w, err.Error(), http.StatusConflict)
