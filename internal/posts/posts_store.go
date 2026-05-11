@@ -2,6 +2,9 @@ package posts
 
 import (
 	"database/sql"
+	"strings"
+
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/users"
 )
 
 func NewStore(db *sql.DB) StoreInterface {
@@ -21,6 +24,9 @@ func (pgs *PostgresStore) CreatePost(userId int64, payload *CreatePostParam) err
 	_, err := pgs.db.Exec(query, userId, payload.Title, payload.Content)
 
 	if err != nil {
+		if strings.Contains(err.Error(), `insert or update on table "posts" violates foreign key constraint "fk_posts_user_id"`) {
+			return users.ErrUserNotFound
+		}
 		return err
 	}
 

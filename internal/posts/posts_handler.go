@@ -1,13 +1,13 @@
 package posts
 
 import (
-	"errors"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/auth"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/httpjson"
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/users"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/validation"
 )
 
@@ -123,9 +123,12 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	err = h.service.CreatePost(int64(userId), &payload)
 	if err != nil {
 		log.Println(err)
-		if errors.As(err, &validation.ErrValidation) {
+		switch {
+		case err == users.ErrUserNotFound:
+			http.Error(w, err.Error(), http.StatusNotFound)
+		case validation.IsErrValidation(err):
 			http.Error(w, err.Error(), http.StatusBadRequest)
-		} else {
+		default:
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return

@@ -46,7 +46,7 @@ func (svc *Service) GetPostById(postId int64) (*Post, error) {
 
 func (svc *Service) CreatePost(userId int64, payload *CreatePostParam) error {
 	if err := validation.Validate.Struct(payload); err != nil {
-		return err
+		return validation.NewError(err)
 	}
 
 	err := svc.store.CreatePost(userId, payload)
