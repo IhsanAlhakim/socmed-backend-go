@@ -1,6 +1,11 @@
 package follows
 
-import "database/sql"
+import (
+	"database/sql"
+	"strings"
+
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/users"
+)
 
 func NewStore(db *sql.DB) StoreInterface {
 	return &PostgresStore{db: db}
@@ -92,7 +97,16 @@ func (pgs *PostgresStore) Follow(userId int64, payload *FollowParam) error {
 	_, err := pgs.db.Exec(query, payload.FollowedId, userId)
 
 	if err != nil {
-		return err
+		switch {
+		case strings.Contains(err.Error(), `insert or update on table "follows" violates foreign key constraint "fk_follow_followed_id"`):
+			return ErrFollowedNotFound
+		case strings.Contains(err.Error(), `insert or update on table "follows" violates foreign key constraint "fk_follow_follower_id"`):
+			return users.ErrUserNotFound
+		case strings.Contains(err.Error(), `duplicate key value violates unique constraint "follows_followedid_followerid_unique"`):
+			return ErrUserAlreadyFollowed
+		default:
+			return err
+		}
 	}
 
 	return nil

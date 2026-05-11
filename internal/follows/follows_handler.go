@@ -8,6 +8,7 @@ import (
 
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/auth"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/httpjson"
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/users"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/validation"
 )
 
@@ -73,10 +74,10 @@ func (h *Handler) Follow(w http.ResponseWriter, r *http.Request) {
 
 	var payload FollowParam
 	if err := httpjson.Decode(r, &payload); err != nil {
-		log.Println(err)
 		if err == httpjson.ErrEmptyBody {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		} else {
+			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return
@@ -84,10 +85,14 @@ func (h *Handler) Follow(w http.ResponseWriter, r *http.Request) {
 
 	err = h.service.Follow(int64(userId), &payload)
 	if err != nil {
-		log.Println(err)
-		if errors.As(err, &validation.ErrValidation) {
+		switch {
+		case validation.IsErrValidation(err):
 			http.Error(w, err.Error(), http.StatusBadRequest)
-		} else {
+		case err == ErrFollowedNotFound || err == users.ErrUserNotFound:
+			http.Error(w, err.Error(), http.StatusNotFound)
+		case err == ErrUserAlreadyFollowed:
+			http.Error(w, err.Error(), http.StatusConflict)
+		default:
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return
