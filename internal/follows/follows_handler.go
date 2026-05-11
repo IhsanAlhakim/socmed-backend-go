@@ -93,6 +93,7 @@ func (h *Handler) Follow(w http.ResponseWriter, r *http.Request) {
 		case err == ErrUserAlreadyFollowed:
 			http.Error(w, err.Error(), http.StatusConflict)
 		default:
+			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return
