@@ -39,9 +39,18 @@ func (pgs *PostgresStore) DeletePost(postId int64) error {
 	DELETE FROM posts 
 	WHERE id = $1
 	`
-	_, err := pgs.db.Exec(query, postId)
+	result, err := pgs.db.Exec(query, postId)
 	if err != nil {
 		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return ErrPostNotFound
 	}
 
 	return nil

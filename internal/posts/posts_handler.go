@@ -111,10 +111,10 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	var payload CreatePostParam
 	if err := httpjson.Decode(r, &payload); err != nil {
-		log.Println(err)
 		if err == httpjson.ErrEmptyBody {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		} else {
+			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return
@@ -122,13 +122,13 @@ func (h *Handler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	err = h.service.CreatePost(int64(userId), &payload)
 	if err != nil {
-		log.Println(err)
 		switch {
 		case err == users.ErrUserNotFound:
 			http.Error(w, err.Error(), http.StatusNotFound)
 		case validation.IsErrValidation(err):
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		default:
+			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return
@@ -150,6 +150,10 @@ func (h *Handler) DeletePost(w http.ResponseWriter, r *http.Request) {
 
 	err = h.service.DeletePost(int64(postIdInt))
 	if err != nil {
+		if err == ErrPostNotFound {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
