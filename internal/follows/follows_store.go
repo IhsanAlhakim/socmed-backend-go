@@ -120,10 +120,19 @@ func (pgs *PostgresStore) Unfollow(userId int64, payload *FollowParam) error {
 	follower_id = $2
 	`
 
-	_, err := pgs.db.Exec(query, payload.FollowedId, userId)
+	result, err := pgs.db.Exec(query, payload.FollowedId, userId)
 
 	if err != nil {
 		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return users.ErrUserNotFound
 	}
 
 	return nil
