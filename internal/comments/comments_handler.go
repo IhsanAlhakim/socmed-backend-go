@@ -1,13 +1,14 @@
 package comments
 
 import (
-	"errors"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/auth"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/httpjson"
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/posts"
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/users"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/validation"
 )
 
@@ -39,10 +40,10 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 
 	var payload CreateCommentParam
 	if err := httpjson.Decode(r, &payload); err != nil {
-		log.Println(err)
 		if err == httpjson.ErrEmptyBody {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		} else {
+			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return
@@ -50,10 +51,13 @@ func (h *Handler) CreateComment(w http.ResponseWriter, r *http.Request) {
 
 	err = h.service.CreateComment(int64(userId), int64(postIdInt), &payload)
 	if err != nil {
-		log.Println(err)
-		if errors.As(err, &validation.ErrValidation) {
+		switch {
+		case validation.IsErrValidation(err):
 			http.Error(w, err.Error(), http.StatusBadRequest)
-		} else {
+		case err == users.ErrUserNotFound || err == posts.ErrPostNotFound:
+			http.Error(w, err.Error(), http.StatusNotFound)
+		default:
+			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return

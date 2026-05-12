@@ -14,7 +14,7 @@ type Service struct {
 
 func (svc *Service) CreateComment(userId int64, postId int64, payload *CreateCommentParam) error {
 	if err := validation.Validate.Struct(payload); err != nil {
-		return err
+		return validation.NewError(err)
 	}
 	err := svc.store.CreateComment(userId, postId, payload)
 	if err != nil {

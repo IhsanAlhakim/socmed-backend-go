@@ -2,6 +2,10 @@ package comments
 
 import (
 	"database/sql"
+	"strings"
+
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/posts"
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/users"
 )
 
 func NewStore(db *sql.DB) StoreInterface {
@@ -21,7 +25,14 @@ func (pgs *PostgresStore) CreateComment(userId int64, postId int64, payload *Cre
 	_, err := pgs.db.Exec(query, userId, postId, payload.Content)
 
 	if err != nil {
-		return err
+		switch {
+		case strings.Contains(err.Error(), `insert or update on table "comments" violates foreign key constraint "comments_post_id_fkey"`):
+			return posts.ErrPostNotFound
+		case strings.Contains(err.Error(), `insert or update on table "comments" violates foreign key constraint "comments_user_id_fkey`):
+			return users.ErrUserNotFound
+		default:
+			return err
+		}
 	}
 
 	return nil
