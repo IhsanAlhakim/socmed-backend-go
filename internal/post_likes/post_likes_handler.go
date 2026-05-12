@@ -7,6 +7,8 @@ import (
 
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/auth"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/httpjson"
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/posts"
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/users"
 )
 
 func NewHandler(service ServiceInterface) *Handler {
@@ -37,8 +39,15 @@ func (h *Handler) LikePost(w http.ResponseWriter, r *http.Request) {
 
 	err = h.service.LikePost(int64(postIdInt), int64(userId))
 	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		switch {
+		case err == ErrPostAlreadyLiked:
+			http.Error(w, err.Error(), http.StatusConflict)
+		case err == users.ErrUserNotFound || err == posts.ErrPostNotFound:
+			http.Error(w, err.Error(), http.StatusNotFound)
+		default:
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 

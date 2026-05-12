@@ -1,6 +1,12 @@
 package plikes
 
-import "database/sql"
+import (
+	"database/sql"
+	"strings"
+
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/posts"
+	"github.com/IhsanAlhakim/socmed-backend-go/internal/users"
+)
 
 func NewStore(db *sql.DB) StoreInterface {
 	return &PostgresStore{db: db}
@@ -19,7 +25,16 @@ func (pgs *PostgresStore) LikePost(postId int64, userId int64) error {
 	_, err := pgs.db.Exec(query, postId, userId)
 
 	if err != nil {
-		return err
+		switch {
+		case strings.Contains(err.Error(), `duplicate key value violates unique constraint "post_likes_postid_userid_unique"`):
+			return ErrPostAlreadyLiked
+		case strings.Contains(err.Error(), `insert or update on table "post_likes" violates foreign key constraint "post_likes_user_id_fkey`):
+			return users.ErrUserNotFound
+		case strings.Contains(err.Error(), `insert or update on table "post_likes" violates foreign key constraint "post_likes_post_id_fkey"`):
+			return posts.ErrPostNotFound
+		default:
+			return err
+		}
 	}
 
 	return nil
