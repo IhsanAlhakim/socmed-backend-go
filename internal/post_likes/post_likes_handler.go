@@ -97,7 +97,7 @@ func (h *Handler) GetPostLiker(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	follower, err := h.service.GetPostLiker(int64(postIdInt))
+	liker, err := h.service.GetPostLiker(int64(postIdInt))
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -105,7 +105,7 @@ func (h *Handler) GetPostLiker(w http.ResponseWriter, r *http.Request) {
 	}
 
 	httpjson.Respond(w, httpjson.ResponseBody{
-		Data: follower,
+		Data: liker,
 	}, http.StatusOK)
 }
 
