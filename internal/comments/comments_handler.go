@@ -102,6 +102,10 @@ func (h *Handler) DeleteComment(w http.ResponseWriter, r *http.Request) {
 
 	err = h.service.DeleteComment(int64(commentIdInt))
 	if err != nil {
+		if err == ErrCommentNotFound {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

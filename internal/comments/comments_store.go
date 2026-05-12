@@ -75,10 +75,18 @@ func (pgs *PostgresStore) DeleteComment(commentId int64) error {
 	WHERE id = $1
 	`
 
-	_, err := pgs.db.Exec(query, commentId)
+	result, err := pgs.db.Exec(query, commentId)
 
 	if err != nil {
 		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return ErrCommentNotFound
 	}
 
 	return nil
