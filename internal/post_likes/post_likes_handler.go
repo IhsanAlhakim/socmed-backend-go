@@ -74,6 +74,10 @@ func (h *Handler) UnlikePost(w http.ResponseWriter, r *http.Request) {
 
 	err = h.service.UnlikePost(int64(postIdInt), int64(userId))
 	if err != nil {
+		if err == ErrLikeNotFound {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

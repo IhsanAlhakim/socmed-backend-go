@@ -47,10 +47,19 @@ func (pgs *PostgresStore) UnlikePost(postId int64, userId int64) error {
 	AND user_id = $2
 	`
 
-	_, err := pgs.db.Exec(query, postId, userId)
+	result, err := pgs.db.Exec(query, postId, userId)
 
 	if err != nil {
 		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return ErrLikeNotFound
 	}
 
 	return nil
