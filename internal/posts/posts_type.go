@@ -26,12 +26,10 @@ type Post struct {
 	ID        int64     `json:"id,omitempty"`
 	UserId    int64     `json:"user_id,omitempty"`
 	Creator   string    `json:"creator,omitempty"`
-	Title     string    `json:"title,omitempty"`
 	Content   string    `json:"content,omitempty"`
 	CreatedAt time.Time `json:"created_at,omitempty"`
 }
 
 type CreatePostParam struct {
-	Title   string `json:"title" validate:"required"`
 	Content string `json:"content" validate:"required"`
 }

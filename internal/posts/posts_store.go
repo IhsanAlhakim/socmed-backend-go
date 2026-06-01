@@ -17,11 +17,11 @@ type PostgresStore struct {
 
 func (pgs *PostgresStore) CreatePost(userId int64, payload *CreatePostParam) error {
 	query := `
-	INSERT INTO posts (user_id, title, content)
+	INSERT INTO posts (user_id, content)
 	VALUES ($1, $2, $3)
 	`
 
-	_, err := pgs.db.Exec(query, userId, payload.Title, payload.Content)
+	_, err := pgs.db.Exec(query, userId, payload.Content)
 
 	if err != nil {
 		if strings.Contains(err.Error(), `insert or update on table "posts" violates foreign key constraint "fk_posts_user_id"`) {
@@ -59,7 +59,7 @@ func (pgs *PostgresStore) DeletePost(postId int64) error {
 func (pgs *PostgresStore) GetPosts() (*[]Post, error) {
 
 	query := `
-	SELECT p.id, u.username as creator, p.title, p.content, p.created_at
+	SELECT p.id, u.username as creator, p.content, p.created_at
 	FROM posts p
 	JOIN users u ON p.user_id = u.id
 	`
@@ -73,7 +73,7 @@ func (pgs *PostgresStore) GetPosts() (*[]Post, error) {
 
 	for rows.Next() {
 		var each Post
-		err := rows.Scan(&each.ID, &each.Creator, &each.Title, &each.Content, &each.CreatedAt)
+		err := rows.Scan(&each.ID, &each.Creator, &each.Content, &each.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -90,7 +90,7 @@ func (pgs *PostgresStore) GetPosts() (*[]Post, error) {
 func (pgs *PostgresStore) GetFollowedPosts(userId int64) (*[]Post, error) {
 
 	query := `
-	SELECT p.id, u.username as creator, p.title, p.content, p.created_at
+	SELECT p.id, u.username as creator, p.content, p.created_at
 	FROM posts p
 	JOIN users u ON p.user_id = u.id
 	WHERE p.user_id IN (SELECT followed_id FROM follows WHERE follower_id = $1)
@@ -105,7 +105,7 @@ func (pgs *PostgresStore) GetFollowedPosts(userId int64) (*[]Post, error) {
 
 	for rows.Next() {
 		var each Post
-		err := rows.Scan(&each.ID, &each.Creator, &each.Title, &each.Content, &each.CreatedAt)
+		err := rows.Scan(&each.ID, &each.Creator, &each.Content, &each.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -122,14 +122,14 @@ func (pgs *PostgresStore) GetFollowedPosts(userId int64) (*[]Post, error) {
 func (pgs *PostgresStore) GetById(postId int64) (*Post, error) {
 
 	query := `
-	SELECT id, title, user_id, content, created_at
+	SELECT id, user_id, content, created_at
 	FROM posts
 	WHERE id = $1
 	`
 
 	var result Post
 
-	err := pgs.db.QueryRow(query, postId).Scan(&result.ID, &result.Title, &result.UserId, &result.Content, &result.CreatedAt)
+	err := pgs.db.QueryRow(query, postId).Scan(&result.ID, &result.UserId, &result.Content, &result.CreatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return &Post{}, ErrPostNotFound
@@ -143,7 +143,7 @@ func (pgs *PostgresStore) GetById(postId int64) (*Post, error) {
 func (pgs *PostgresStore) GetLikedPosts(userId int64) (*[]Post, error) {
 
 	query := `
-	SELECT p.id, u.username as creator, p.title, p.content, p.created_at
+	SELECT p.id, u.username as creator, p.content, p.created_at
 	FROM posts p
 	JOIN users u ON p.user_id = u.id
 	WHERE p.id IN (SELECT post_id from post_likes WHERE user_id = $1)
@@ -158,7 +158,7 @@ func (pgs *PostgresStore) GetLikedPosts(userId int64) (*[]Post, error) {
 
 	for rows.Next() {
 		var each Post
-		err := rows.Scan(&each.ID, &each.Creator, &each.Title, &each.Content, &each.CreatedAt)
+		err := rows.Scan(&each.ID, &each.Creator, &each.Content, &each.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
