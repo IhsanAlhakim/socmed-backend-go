@@ -18,7 +18,7 @@ type PostgresStore struct {
 func (pgs *PostgresStore) CreatePost(userId int64, payload *CreatePostParam) error {
 	query := `
 	INSERT INTO posts (user_id, content)
-	VALUES ($1, $2, $3)
+	VALUES ($1, $2)
 	`
 
 	_, err := pgs.db.Exec(query, userId, payload.Content)
