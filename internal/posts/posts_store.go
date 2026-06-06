@@ -56,14 +56,15 @@ func (pgs *PostgresStore) DeletePost(postId int64) error {
 	return nil
 }
 
-func (pgs *PostgresStore) GetPosts() (*[]Post, error) {
+func (pgs *PostgresStore) GetPosts(userId int64) (*[]Post, error) {
 
 	query := `
-	SELECT p.id, p.user_id, u.username as creator, p.content, p.created_at
+	SELECT p.id, p.user_id, u.username as creator, p.content, p.created_at,
+	EXISTS(SELECT pl.id from post_likes pl WHERE pl.post_id = p.id AND pl.user_id = $1 LIMIT 1) as liked
 	FROM posts p
 	JOIN users u ON p.user_id = u.id
 	`
-	rows, err := pgs.db.Query(query)
+	rows, err := pgs.db.Query(query, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +74,7 @@ func (pgs *PostgresStore) GetPosts() (*[]Post, error) {
 
 	for rows.Next() {
 		var each Post
-		err := rows.Scan(&each.ID, &each.UserId, &each.Creator, &each.Content, &each.CreatedAt)
+		err := rows.Scan(&each.ID, &each.UserId, &each.Creator, &each.Content, &each.CreatedAt, &each.Liked)
 		if err != nil {
 			return nil, err
 		}

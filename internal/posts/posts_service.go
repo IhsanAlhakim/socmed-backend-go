@@ -12,8 +12,8 @@ type Service struct {
 	store StoreInterface
 }
 
-func (svc *Service) GetPosts() (*[]Post, error) {
-	posts, err := svc.store.GetPosts()
+func (svc *Service) GetPosts(userId int64) (*[]Post, error) {
+	posts, err := svc.store.GetPosts(userId)
 	if err != nil {
 		return nil, err
 	}

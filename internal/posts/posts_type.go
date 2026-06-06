@@ -6,7 +6,7 @@ import "time"
 type StoreInterface interface {
 	CreatePost(userId int64, payload *CreatePostParam) error
 	DeletePost(postId int64) error
-	GetPosts() (*[]Post, error)
+	GetPosts(userId int64) (*[]Post, error)
 	GetFollowedPosts(userId int64) (*[]Post, error)
 	GetById(postId int64) (*Post, error)
 	GetLikedPosts(userId int64) (*[]Post, error)
@@ -14,7 +14,7 @@ type StoreInterface interface {
 
 type ServiceInterface interface {
 	CreatePost(userId int64, payload *CreatePostParam) error
-	GetPosts() (*[]Post, error)
+	GetPosts(userId int64) (*[]Post, error)
 	GetFollowedPosts(userId int64) (*[]Post, error)
 	GetPostById(postId int64) (*Post, error)
 	DeletePost(postId int64) error
@@ -27,7 +27,8 @@ type Post struct {
 	UserId    int64     `json:"user_id,omitempty"`
 	Creator   string    `json:"creator,omitempty"`
 	Content   string    `json:"content,omitempty"`
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
+	Liked     bool      `json:"liked"`
 }
 
 type CreatePostParam struct {

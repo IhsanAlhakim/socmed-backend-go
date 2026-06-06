@@ -23,7 +23,14 @@ type Handler struct {
 
 func (h *Handler) GetPosts(w http.ResponseWriter, r *http.Request) {
 
-	posts, err := h.service.GetPosts()
+	userId, err := auth.GetJWTSub(r)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	posts, err := h.service.GetPosts(int64(userId))
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
