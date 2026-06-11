@@ -123,14 +123,15 @@ func (pgs *PostgresStore) GetFollowedPosts(userId int64) (*[]Post, error) {
 func (pgs *PostgresStore) GetById(postId int64) (*Post, error) {
 
 	query := `
-	SELECT id, user_id, content, created_at
-	FROM posts
-	WHERE id = $1
+	SELECT p.id, p.user_id, u.username as creator, p.content, p.created_at
+	FROM posts p
+	JOIN users u ON p.user_id = u.id
+	WHERE p.id = $1
 	`
 
 	var result Post
 
-	err := pgs.db.QueryRow(query, postId).Scan(&result.ID, &result.UserId, &result.Content, &result.CreatedAt)
+	err := pgs.db.QueryRow(query, postId).Scan(&result.ID, &result.UserId, &result.Creator, &result.Content, &result.CreatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return &Post{}, ErrPostNotFound
