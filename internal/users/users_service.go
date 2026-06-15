@@ -29,6 +29,14 @@ func (svc *Service) GetUserById(userId int64) (*User, error) {
 	return user, nil
 }
 
+func (svc *Service) GetUserByUsername(username string) (*User, error) {
+	user, err := svc.store.GetUserByUsername(username)
+	if err != nil {
+		return &User{}, err
+	}
+	return user, nil
+}
+
 func (svc *Service) SignIn(payload *SignInParam) (*http.Cookie, error) {
 	if err := validation.Validate.Struct(payload); err != nil {
 		return nil, validation.NewError(err)

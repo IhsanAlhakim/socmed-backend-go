@@ -35,6 +35,28 @@ func (pgs *PostgresStore) GetUserById(userId int64) (*User, error) {
 	return &result, nil
 }
 
+func (pgs *PostgresStore) GetUserByUsername(username string) (*User, error) {
+
+	query := `
+	SELECT id, username, created_at
+	FROM users
+	WHERE username = $1
+	`
+
+	var result User
+
+	err := pgs.db.QueryRow(query, username).Scan(&result.ID, &result.Username, &result.CreateAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return &User{}, ErrUserNotFound
+		} else {
+			return &User{}, err
+		}
+	}
+
+	return &result, nil
+}
+
 func (pgs *PostgresStore) GetUserByEmail(email string) (*User, error) {
 
 	query := `

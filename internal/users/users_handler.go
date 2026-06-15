@@ -43,6 +43,25 @@ func (h *Handler) GetUserById(w http.ResponseWriter, r *http.Request) {
 	}, http.StatusOK)
 }
 
+func (h *Handler) GetUserByUsername(w http.ResponseWriter, r *http.Request) {
+	username := r.PathValue("username")
+
+	user, err := h.service.GetUserByUsername(username)
+	if err != nil {
+		if err == ErrUserNotFound {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	httpjson.Respond(w, httpjson.ResponseBody{
+		Data: user,
+	}, http.StatusOK)
+}
+
 func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 	var payload SignInParam
 	if err := httpjson.Decode(r, &payload); err != nil {

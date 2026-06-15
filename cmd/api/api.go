@@ -125,6 +125,7 @@ func (app *application) mount() http.Handler {
 		r.Use(m.Auth)
 
 		r.HandleFunc("GET /users", userHandler.GetUserById)
+		r.HandleFunc("GET /users/{username}", userHandler.GetUserByUsername)
 		r.HandleFunc("PUT /users", userHandler.UpdateUser)
 		r.HandleFunc("DELETE /users", userHandler.DeleteUser)
 		r.HandleFunc("DELETE /sessions", userHandler.SignOut)

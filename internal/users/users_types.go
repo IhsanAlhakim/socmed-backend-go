@@ -12,6 +12,7 @@ type StoreInterface interface {
 	DeleteUser(userId int64) error
 	GetUserByEmail(email string) (*User, error)
 	GetUserById(userId int64) (*User, error)
+	GetUserByUsername(username string) (*User, error)
 }
 
 type ServiceInterface interface {
@@ -21,6 +22,7 @@ type ServiceInterface interface {
 	SignIn(payload *SignInParam) (*http.Cookie, error)
 	SignOut() *http.Cookie
 	GetUserById(userId int64) (*User, error)
+	GetUserByUsername(username string) (*User, error)
 }
 
 // Struct
