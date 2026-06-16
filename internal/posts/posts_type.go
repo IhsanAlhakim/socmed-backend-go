@@ -10,6 +10,7 @@ type StoreInterface interface {
 	GetFollowedPosts(userId int64) (*[]Post, error)
 	GetById(postId int64) (*Post, error)
 	GetLikedPosts(userId int64) (*[]Post, error)
+	GetPostsByUsername(userId int64, otherUsername string) (*[]Post, error)
 }
 
 type ServiceInterface interface {
@@ -19,6 +20,7 @@ type ServiceInterface interface {
 	GetPostById(postId int64) (*Post, error)
 	DeletePost(postId int64) error
 	GetLikedPosts(userId int64) (*[]Post, error)
+	GetPostsByUsername(userId int64, otherUsername string) (*[]Post, error)
 }
 
 // struct

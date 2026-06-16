@@ -42,6 +42,28 @@ func (h *Handler) GetPosts(w http.ResponseWriter, r *http.Request) {
 	}, http.StatusOK)
 }
 
+func (h *Handler) GetPostsByUsername(w http.ResponseWriter, r *http.Request) {
+	userId, err := auth.GetJWTSub(r)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	otherUsername := r.PathValue("username")
+
+	posts, err := h.service.GetPostsByUsername(int64(userId), otherUsername)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	httpjson.Respond(w, httpjson.ResponseBody{
+		Data: posts,
+	}, http.StatusOK)
+}
+
 func (h *Handler) GetFollowedPosts(w http.ResponseWriter, r *http.Request) {
 	userId, err := auth.GetJWTSub(r)
 	if err != nil {
