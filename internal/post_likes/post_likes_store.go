@@ -18,16 +18,19 @@ type PostgresStore struct {
 
 func (pgs *PostgresStore) LikePost(postId int64, userId int64) error {
 	query := `
-	INSERT INTO post_likes (post_id, user_id)
-	VALUES ($1, $2)
+	INSERT INTO post_likes (post_id, user_id, deleted)
+	VALUES ($1, $2, FALSE)
+	ON CONFLICT (post_id, user_id)
+	DO UPDATE
+	SET deleted = FALSE
 	`
 
 	_, err := pgs.db.Exec(query, postId, userId)
 
 	if err != nil {
 		switch {
-		case strings.Contains(err.Error(), `duplicate key value violates unique constraint "post_likes_postid_userid_unique"`):
-			return ErrPostAlreadyLiked
+		// case strings.Contains(err.Error(), `duplicate key value violates unique constraint "post_likes_postid_userid_unique"`):
+		// 	return ErrPostAlreadyLiked
 		case strings.Contains(err.Error(), `insert or update on table "post_likes" violates foreign key constraint "post_likes_user_id_fkey`):
 			return users.ErrUserNotFound
 		case strings.Contains(err.Error(), `insert or update on table "post_likes" violates foreign key constraint "post_likes_post_id_fkey"`):
@@ -41,10 +44,15 @@ func (pgs *PostgresStore) LikePost(postId int64, userId int64) error {
 }
 
 func (pgs *PostgresStore) UnlikePost(postId int64, userId int64) error {
+	// query := `
+	// DELETE FROM post_likes
+	// WHERE post_id = $1
+	// AND user_id = $2
+	// `
 	query := `
-	DELETE FROM post_likes
-	WHERE post_id = $1
-	AND user_id = $2
+	UPDATE post_likes
+	SET deleted = TRUE
+	WHERE post_id = $1 AND user_id = $2
 	`
 
 	result, err := pgs.db.Exec(query, postId, userId)
