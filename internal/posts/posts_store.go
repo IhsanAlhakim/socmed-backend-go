@@ -102,9 +102,12 @@ func (pgs *PostgresStore) GetPostsByUsername(userId int64, otherUsername string)
 
 	query := `
 	SELECT p.id, p.user_id, u.username as creator, p.content, p.created_at,
-	EXISTS(SELECT pl.id from post_likes pl WHERE pl.post_id = p.id AND pl.user_id = $1 LIMIT 1) as liked
+	CASE WHEN pl.deleted = FALSE THEN TRUE
+	ELSE FALSE
+	END AS liked
 	FROM posts p
 	JOIN users u ON p.user_id = u.id
+	LEFT JOIN post_likes pl ON p.id = pl.post_id AND pl.user_id = $1
 	WHERE u.username = $2
 	`
 	rows, err := pgs.db.Query(query, userId, otherUsername)
