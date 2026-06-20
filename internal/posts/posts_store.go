@@ -137,9 +137,13 @@ func (pgs *PostgresStore) GetPostsByUsername(userId int64, otherUsername string)
 func (pgs *PostgresStore) GetFollowedPosts(userId int64) (*[]Post, error) {
 
 	query := `
-	SELECT p.id, u.username as creator, p.content, p.created_at
+	SELECT p.id, p.user_id, u.username as creator, p.content, p.created_at,
+	CASE WHEN pl.deleted = FALSE THEN TRUE
+	ELSE FALSE
+	END AS liked
 	FROM posts p
 	JOIN users u ON p.user_id = u.id
+	LEFT JOIN post_likes pl ON p.id = pl.post_id AND pl.user_id = $1
 	WHERE p.user_id IN (SELECT followed_id FROM follows WHERE follower_id = $1)
 	`
 	rows, err := pgs.db.Query(query, userId)
@@ -152,7 +156,7 @@ func (pgs *PostgresStore) GetFollowedPosts(userId int64) (*[]Post, error) {
 
 	for rows.Next() {
 		var each Post
-		err := rows.Scan(&each.ID, &each.Creator, &each.Content, &each.CreatedAt)
+		err := rows.Scan(&each.ID, &each.UserId, &each.Creator, &each.Content, &each.CreatedAt, &each.Liked)
 		if err != nil {
 			return nil, err
 		}
