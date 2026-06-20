@@ -44,8 +44,8 @@ func (svc *Service) GetLikedPosts(userId int64) (*[]Post, error) {
 	return posts, nil
 }
 
-func (svc *Service) GetPostById(postId int64) (*Post, error) {
-	posts, err := svc.store.GetById(postId)
+func (svc *Service) GetPostById(postId int64, userId int64) (*Post, error) {
+	posts, err := svc.store.GetPostById(postId, userId)
 	if err != nil {
 		return &Post{}, err
 	}

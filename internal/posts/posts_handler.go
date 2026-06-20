@@ -114,7 +114,14 @@ func (h *Handler) GetPostById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	post, err := h.service.GetPostById(int64(postIdInt))
+	userId, err := auth.GetJWTSub(r)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	post, err := h.service.GetPostById(int64(postIdInt), int64(userId))
 	if err != nil {
 		if err == ErrPostNotFound {
 			http.Error(w, err.Error(), http.StatusNotFound)

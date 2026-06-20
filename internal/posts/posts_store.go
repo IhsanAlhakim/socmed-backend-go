@@ -170,18 +170,22 @@ func (pgs *PostgresStore) GetFollowedPosts(userId int64) (*[]Post, error) {
 	return &result, nil
 }
 
-func (pgs *PostgresStore) GetById(postId int64) (*Post, error) {
+func (pgs *PostgresStore) GetPostById(postId int64, userId int64) (*Post, error) {
 
 	query := `
-	SELECT p.id, p.user_id, u.username as creator, p.content, p.created_at
+	SELECT p.id, p.user_id, u.username as creator, p.content, p.created_at,
+	CASE WHEN pl.deleted = FALSE THEN TRUE
+	ELSE FALSE
+	END AS liked
 	FROM posts p
 	JOIN users u ON p.user_id = u.id
-	WHERE p.id = $1
+	LEFT JOIN post_likes pl ON p.id = pl.post_id AND pl.user_id = $1
+	WHERE p.id = $2
 	`
 
 	var result Post
 
-	err := pgs.db.QueryRow(query, postId).Scan(&result.ID, &result.UserId, &result.Creator, &result.Content, &result.CreatedAt)
+	err := pgs.db.QueryRow(query, userId, postId).Scan(&result.ID, &result.UserId, &result.Creator, &result.Content, &result.CreatedAt, &result.Liked)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return &Post{}, ErrPostNotFound

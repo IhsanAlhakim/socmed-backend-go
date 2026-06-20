@@ -8,17 +8,17 @@ type StoreInterface interface {
 	DeletePost(postId int64) error
 	GetPosts(userId int64) (*[]Post, error)
 	GetFollowedPosts(userId int64) (*[]Post, error)
-	GetById(postId int64) (*Post, error)
+	GetPostById(postId int64, userId int64) (*Post, error)
 	GetLikedPosts(userId int64) (*[]Post, error)
 	GetPostsByUsername(userId int64, otherUsername string) (*[]Post, error)
 }
 
 type ServiceInterface interface {
 	CreatePost(userId int64, payload *CreatePostParam) error
+	DeletePost(postId int64) error
 	GetPosts(userId int64) (*[]Post, error)
 	GetFollowedPosts(userId int64) (*[]Post, error)
-	GetPostById(postId int64) (*Post, error)
-	DeletePost(postId int64) error
+	GetPostById(postId int64, userId int64) (*Post, error)
 	GetLikedPosts(userId int64) (*[]Post, error)
 	GetPostsByUsername(userId int64, otherUsername string) (*[]Post, error)
 }
