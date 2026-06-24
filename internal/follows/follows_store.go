@@ -90,8 +90,11 @@ func (pgs *PostgresStore) GetFollowed(userId int64) (*[]Follow, error) {
 
 func (pgs *PostgresStore) Follow(userId int64, payload *FollowParam) error {
 	query := `
-	INSERT INTO follows (followed_id, follower_id)
-	VALUES ($1, $2)
+	INSERT INTO follows (followed_id, follower_id, deleted)
+	VALUES ($1, $2, FALSE)
+	ON CONFLICT (followed_id, follower_id)
+	DO UPDATE
+	SET deleted = FALSE
 	`
 
 	_, err := pgs.db.Exec(query, payload.FollowedId, userId)
@@ -102,8 +105,8 @@ func (pgs *PostgresStore) Follow(userId int64, payload *FollowParam) error {
 			return ErrFollowedNotFound
 		case strings.Contains(err.Error(), `insert or update on table "follows" violates foreign key constraint "fk_follow_follower_id"`):
 			return users.ErrUserNotFound
-		case strings.Contains(err.Error(), `duplicate key value violates unique constraint "follows_followedid_followerid_unique"`):
-			return ErrUserAlreadyFollowed
+		// case strings.Contains(err.Error(), `duplicate key value violates unique constraint "follows_followedid_followerid_unique"`):
+		// 	return ErrUserAlreadyFollowed
 		default:
 			return err
 		}
