@@ -32,6 +32,11 @@ func (svc *Service) Follow(userId int64, payload *FollowParam) error {
 	if err := validation.Validate.Struct(payload); err != nil {
 		return validation.NewError(err)
 	}
+
+	if userId == payload.FollowedId {
+		return ErrFollowerSameAsFollowed
+	}
+
 	err := svc.store.Follow(userId, payload)
 	if err != nil {
 		return err

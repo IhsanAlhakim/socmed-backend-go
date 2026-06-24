@@ -85,7 +85,7 @@ func (h *Handler) Follow(w http.ResponseWriter, r *http.Request) {
 	err = h.service.Follow(int64(userId), &payload)
 	if err != nil {
 		switch {
-		case validation.IsErrValidation(err):
+		case validation.IsErrValidation(err) || err == ErrFollowerSameAsFollowed:
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		case err == ErrFollowedNotFound || err == users.ErrUserNotFound:
 			http.Error(w, err.Error(), http.StatusNotFound)
