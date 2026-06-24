@@ -117,10 +117,9 @@ func (pgs *PostgresStore) Follow(userId int64, payload *FollowParam) error {
 
 func (pgs *PostgresStore) Unfollow(userId int64, payload *FollowParam) error {
 	query := `
-	DELETE FROM follows
-	WHERE followed_id = $1
-	AND
-	follower_id = $2
+	UPDATE follows
+	SET deleted = TRUE
+	WHERE followed_id = $1 AND follower_id = $2
 	`
 
 	result, err := pgs.db.Exec(query, payload.FollowedId, userId)
