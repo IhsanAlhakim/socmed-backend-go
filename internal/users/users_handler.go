@@ -46,7 +46,14 @@ func (h *Handler) GetUserById(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetUserByUsername(w http.ResponseWriter, r *http.Request) {
 	username := r.PathValue("username")
 
-	user, err := h.service.GetUserByUsername(username)
+	loggedInUserId, err := auth.GetJWTSub(r)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	user, err := h.service.GetUserByUsername(int64(loggedInUserId), username)
 	if err != nil {
 		if err == ErrUserNotFound {
 			http.Error(w, err.Error(), http.StatusNotFound)

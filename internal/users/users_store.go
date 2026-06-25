@@ -35,17 +35,27 @@ func (pgs *PostgresStore) GetUserById(userId int64) (*User, error) {
 	return &result, nil
 }
 
-func (pgs *PostgresStore) GetUserByUsername(username string) (*User, error) {
+func (pgs *PostgresStore) GetUserByUsername(loggedInUserId int64, username string) (*User, error) {
+
+	// query := `
+	// SELECT id, username, created_at
+	// FROM users
+	// WHERE username = $1
+	// `
 
 	query := `
-	SELECT id, username, created_at
-	FROM users
-	WHERE username = $1
+	SELECT u.id, u.username, u.created_at,
+	CASE WHEN fl.deleted = FALSE THEN TRUE
+	ELSE FALSE
+	END AS followed
+	FROM users u
+	LEFT JOIN follows fl ON u.id = fl.followed_id AND fl.follower_id = $1
+	WHERE u.username = $2
 	`
 
 	var result User
 
-	err := pgs.db.QueryRow(query, username).Scan(&result.ID, &result.Username, &result.CreateAt)
+	err := pgs.db.QueryRow(query, loggedInUserId, username).Scan(&result.ID, &result.Username, &result.CreateAt, &result.Followed)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return &User{}, ErrUserNotFound

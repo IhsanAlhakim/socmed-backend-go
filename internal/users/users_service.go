@@ -29,8 +29,8 @@ func (svc *Service) GetUserById(userId int64) (*User, error) {
 	return user, nil
 }
 
-func (svc *Service) GetUserByUsername(username string) (*User, error) {
-	user, err := svc.store.GetUserByUsername(username)
+func (svc *Service) GetUserByUsername(loggedInUserId int64, username string) (*User, error) {
+	user, err := svc.store.GetUserByUsername(loggedInUserId, username)
 	if err != nil {
 		return &User{}, err
 	}

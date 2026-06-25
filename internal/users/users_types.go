@@ -12,7 +12,7 @@ type StoreInterface interface {
 	DeleteUser(userId int64) error
 	GetUserByEmail(email string) (*User, error)
 	GetUserById(userId int64) (*User, error)
-	GetUserByUsername(username string) (*User, error)
+	GetUserByUsername(loggedInUserId int64, username string) (*User, error)
 }
 
 type ServiceInterface interface {
@@ -22,7 +22,7 @@ type ServiceInterface interface {
 	SignIn(payload *SignInParam) (*http.Cookie, error)
 	SignOut() *http.Cookie
 	GetUserById(userId int64) (*User, error)
-	GetUserByUsername(username string) (*User, error)
+	GetUserByUsername(loggedInUserId int64, username string) (*User, error)
 }
 
 // Struct
@@ -32,6 +32,7 @@ type User struct {
 	Email    string    `json:"email,omitempty"`
 	Password string    `json:"password,omitempty"`
 	CreateAt time.Time `json:"created_at"`
+	Followed bool      `json:"followed"`
 }
 
 type CreateUserParam struct {
