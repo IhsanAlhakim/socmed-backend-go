@@ -25,12 +25,14 @@ type ServiceInterface interface {
 
 // struct
 type Post struct {
-	ID        int64     `json:"id,omitempty"`
-	UserId    int64     `json:"user_id,omitempty"`
-	Creator   string    `json:"creator,omitempty"`
-	Content   string    `json:"content,omitempty"`
-	CreatedAt time.Time `json:"created_at"`
-	Liked     bool      `json:"liked"`
+	ID           int64     `json:"id,omitempty"`
+	UserId       int64     `json:"user_id,omitempty"`
+	Creator      string    `json:"creator,omitempty"`
+	Content      string    `json:"content,omitempty"`
+	CreatedAt    time.Time `json:"created_at"`
+	LikeCount    int64     `json:"like_count"`
+	CommentCount int64     `json:"comment_count"`
+	Liked        bool      `json:"liked"`
 }
 
 type CreatePostParam struct {

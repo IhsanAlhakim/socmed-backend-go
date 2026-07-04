@@ -66,7 +66,9 @@ func (pgs *PostgresStore) GetPosts(userId int64) (*[]Post, error) {
 	// `
 
 	query := `
-	SELECT p.id, p.user_id, u.username as creator, p.content, p.created_at, 
+	SELECT p.id, p.user_id, u.username as creator, p.content, p.created_at,
+	(SELECT COUNT(*) FROM post_likes pl WHERE pl.post_id = p.id AND pl.deleted = false) as like_count,
+	(SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) as comment_count, 
 	CASE WHEN pl.deleted = FALSE THEN TRUE
 	ELSE FALSE
 	END AS liked
@@ -84,7 +86,7 @@ func (pgs *PostgresStore) GetPosts(userId int64) (*[]Post, error) {
 
 	for rows.Next() {
 		var each Post
-		err := rows.Scan(&each.ID, &each.UserId, &each.Creator, &each.Content, &each.CreatedAt, &each.Liked)
+		err := rows.Scan(&each.ID, &each.UserId, &each.Creator, &each.Content, &each.CreatedAt, &each.LikeCount, &each.CommentCount, &each.Liked)
 		if err != nil {
 			return nil, err
 		}
