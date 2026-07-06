@@ -180,6 +180,8 @@ func (pgs *PostgresStore) GetPostById(postId int64, userId int64) (*Post, error)
 
 	query := `
 	SELECT p.id, p.user_id, u.username as creator, p.content, p.created_at,
+	(SELECT COUNT(*) FROM post_likes pl WHERE pl.post_id = p.id AND pl.deleted = false) as like_count,
+	(SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id) as comment_count,
 	CASE WHEN pl.deleted = FALSE THEN TRUE
 	ELSE FALSE
 	END AS liked
@@ -191,7 +193,7 @@ func (pgs *PostgresStore) GetPostById(postId int64, userId int64) (*Post, error)
 
 	var result Post
 
-	err := pgs.db.QueryRow(query, userId, postId).Scan(&result.ID, &result.UserId, &result.Creator, &result.Content, &result.CreatedAt, &result.Liked)
+	err := pgs.db.QueryRow(query, userId, postId).Scan(&result.ID, &result.UserId, &result.Creator, &result.Content, &result.CreatedAt, &result.LikeCount, &result.CommentCount, &result.Liked)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return &Post{}, ErrPostNotFound
