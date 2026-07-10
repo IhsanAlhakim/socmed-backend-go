@@ -40,7 +40,7 @@ func (pgs *PostgresStore) CreateComment(userId int64, postId int64, payload *Cre
 
 func (pgs *PostgresStore) Getcomments(postId int64) (*[]Comment, error) {
 	query := `
-	SELECT c.id, u.username, c.content, c.created_at
+	SELECT c.id, c.post_id, c.user_id, u.username, c.content, c.created_at
 	FROM comments c
 	JOIN users u ON c.user_id = u.id
 	WHERE c.post_id = $1 
@@ -55,7 +55,7 @@ func (pgs *PostgresStore) Getcomments(postId int64) (*[]Comment, error) {
 
 	for rows.Next() {
 		var each Comment
-		err := rows.Scan(&each.ID, &each.Username, &each.Content, &each.CreatedAt)
+		err := rows.Scan(&each.ID, &each.PostId, &each.UserId, &each.Username, &each.Content, &each.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
