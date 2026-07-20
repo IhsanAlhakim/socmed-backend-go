@@ -88,7 +88,7 @@ func (pgs *PostgresStore) GetFollowed(userId int64) (*[]Follow, error) {
 	return &result, nil
 }
 
-func (pgs *PostgresStore) Follow(userId int64, payload *FollowParam) error {
+func (pgs *PostgresStore) Follow(userId int64, followedUserId int64) error {
 	query := `
 	INSERT INTO follows (followed_id, follower_id, deleted)
 	VALUES ($1, $2, FALSE)
@@ -97,7 +97,7 @@ func (pgs *PostgresStore) Follow(userId int64, payload *FollowParam) error {
 	SET deleted = FALSE
 	`
 
-	_, err := pgs.db.Exec(query, payload.FollowedId, userId)
+	_, err := pgs.db.Exec(query, followedUserId, userId)
 
 	if err != nil {
 		switch {
@@ -115,14 +115,14 @@ func (pgs *PostgresStore) Follow(userId int64, payload *FollowParam) error {
 	return nil
 }
 
-func (pgs *PostgresStore) Unfollow(userId int64, payload *FollowParam) error {
+func (pgs *PostgresStore) Unfollow(userId int64, followedUserId int64) error {
 	query := `
 	UPDATE follows
 	SET deleted = TRUE
 	WHERE followed_id = $1 AND follower_id = $2
 	`
 
-	result, err := pgs.db.Exec(query, payload.FollowedId, userId)
+	result, err := pgs.db.Exec(query, followedUserId, userId)
 
 	if err != nil {
 		return err

@@ -8,7 +8,6 @@ import (
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/auth"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/httpjson"
 	"github.com/IhsanAlhakim/socmed-backend-go/internal/users"
-	"github.com/IhsanAlhakim/socmed-backend-go/internal/validation"
 )
 
 func NewHandler(service ServiceInterface) *Handler {
@@ -71,25 +70,20 @@ func (h *Handler) Follow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var payload FollowParam
-	if err := httpjson.Decode(r, &payload); err != nil {
-		if err == httpjson.ErrEmptyBody {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		} else {
-			log.Println(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
+	followedUserId := r.PathValue("followedUserId")
+	followedUserIdInt, err := strconv.Atoi(followedUserId)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	err = h.service.Follow(int64(userId), &payload)
+	err = h.service.Follow(int64(userId), int64(followedUserIdInt))
 	if err != nil {
-		switch {
-		case validation.IsErrValidation(err) || err == ErrFollowerSameAsFollowed:
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		case err == ErrFollowedNotFound || err == users.ErrUserNotFound:
+		switch err {
+		case ErrFollowedNotFound, users.ErrUserNotFound:
 			http.Error(w, err.Error(), http.StatusNotFound)
-		case err == ErrUserAlreadyFollowed:
+		case ErrUserAlreadyFollowed:
 			http.Error(w, err.Error(), http.StatusConflict)
 		default:
 			log.Println(err)
@@ -111,23 +105,18 @@ func (h *Handler) Unfollow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var payload FollowParam
-	if err := httpjson.Decode(r, &payload); err != nil {
-		if err == httpjson.ErrEmptyBody {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		} else {
-			log.Println(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
+	followedUserId := r.PathValue("followedUserId")
+	followedUserIdInt, err := strconv.Atoi(followedUserId)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	err = h.service.Unfollow(int64(userId), &payload)
+	err = h.service.Unfollow(int64(userId), int64(followedUserIdInt))
 	if err != nil {
-		switch {
-		case validation.IsErrValidation(err):
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		case err == users.ErrUserNotFound:
+		switch err {
+		case users.ErrUserNotFound:
 			http.Error(w, err.Error(), http.StatusNotFound)
 		default:
 			log.Println(err)

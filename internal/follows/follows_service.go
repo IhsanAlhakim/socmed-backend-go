@@ -1,7 +1,5 @@
 package follows
 
-import "github.com/IhsanAlhakim/socmed-backend-go/internal/validation"
-
 func NewService(store StoreInterface) ServiceInterface {
 	return &Service{
 		store: store,
@@ -28,27 +26,22 @@ func (svc *Service) GetFollowed(userId int64) (*[]Follow, error) {
 	return followed, nil
 }
 
-func (svc *Service) Follow(userId int64, payload *FollowParam) error {
-	if err := validation.Validate.Struct(payload); err != nil {
-		return validation.NewError(err)
-	}
+func (svc *Service) Follow(userId int64, followedUserId int64) error {
 
-	if userId == payload.FollowedId {
+	if userId == followedUserId {
 		return ErrFollowerSameAsFollowed
 	}
 
-	err := svc.store.Follow(userId, payload)
+	err := svc.store.Follow(userId, followedUserId)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (svc *Service) Unfollow(userId int64, payload *FollowParam) error {
-	if err := validation.Validate.Struct(payload); err != nil {
-		return validation.NewError(err)
-	}
-	err := svc.store.Unfollow(userId, payload)
+func (svc *Service) Unfollow(userId int64, followedUserId int64) error {
+
+	err := svc.store.Unfollow(userId, followedUserId)
 	if err != nil {
 		return err
 	}

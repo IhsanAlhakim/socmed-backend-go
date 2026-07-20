@@ -140,8 +140,8 @@ func (app *application) mount() http.Handler {
 
 		r.HandleFunc("GET /users/{userId}/followers", followHandler.GetFollower)
 		r.HandleFunc("GET /users/{userId}/following", followHandler.GetFollowed)
-		r.HandleFunc("POST /follow", followHandler.Follow)
-		r.HandleFunc("DELETE /follow", followHandler.Unfollow)
+		r.HandleFunc("POST /follows/{followedUserId}", followHandler.Follow)
+		r.HandleFunc("DELETE /follows/{followedUserId}", followHandler.Unfollow)
 
 		r.HandleFunc("POST /posts/{postId}/comments", commentHandler.CreateComment)
 		r.HandleFunc("GET /posts/{postId}/comments", commentHandler.Getcomments)
