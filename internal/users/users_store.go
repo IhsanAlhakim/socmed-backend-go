@@ -16,14 +16,16 @@ type PostgresStore struct {
 func (pgs *PostgresStore) GetUserById(userId int64) (*User, error) {
 
 	query := `
-	SELECT id, username, email, created_at
+	SELECT id, username, email, created_at,
+	(SELECT COUNT(*) FROM follows WHERE followed_id = $1 and deleted = false) as follower_count,
+	(SELECT COUNT(*) FROM follows WHERE follower_id = $1 and deleted = false) as following_count
 	FROM users
 	WHERE id = $1
 	`
 
 	var result User
 
-	err := pgs.db.QueryRow(query, userId).Scan(&result.ID, &result.Username, &result.Email, &result.CreateAt)
+	err := pgs.db.QueryRow(query, userId).Scan(&result.ID, &result.Username, &result.Email, &result.CreateAt, &result.FollowerCount, &result.FollowingCount)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return &User{}, ErrUserNotFound
@@ -47,7 +49,9 @@ func (pgs *PostgresStore) GetUserByUsername(loggedInUserId int64, username strin
 	SELECT u.id, u.username, u.created_at,
 	CASE WHEN fl.deleted = FALSE THEN TRUE
 	ELSE FALSE
-	END AS followed
+	END AS followed,
+	(SELECT COUNT(*) FROM follows WHERE followed_id = u.id and deleted = false) as follower_count,
+	(SELECT COUNT(*) FROM follows WHERE follower_id = u.id and deleted = false) as following_count
 	FROM users u
 	LEFT JOIN follows fl ON u.id = fl.followed_id AND fl.follower_id = $1
 	WHERE u.username = $2
@@ -55,7 +59,7 @@ func (pgs *PostgresStore) GetUserByUsername(loggedInUserId int64, username strin
 
 	var result User
 
-	err := pgs.db.QueryRow(query, loggedInUserId, username).Scan(&result.ID, &result.Username, &result.CreateAt, &result.Followed)
+	err := pgs.db.QueryRow(query, loggedInUserId, username).Scan(&result.ID, &result.Username, &result.CreateAt, &result.Followed, &result.FollowerCount, &result.FollowingCount)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return &User{}, ErrUserNotFound

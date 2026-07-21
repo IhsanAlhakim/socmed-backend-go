@@ -27,12 +27,14 @@ type ServiceInterface interface {
 
 // Struct
 type User struct {
-	ID       int64     `json:"id,omitempty"`
-	Username string    `json:"username,omitempty"`
-	Email    string    `json:"email,omitempty"`
-	Password string    `json:"password,omitempty"`
-	CreateAt time.Time `json:"created_at"`
-	Followed bool      `json:"followed"`
+	ID             int64     `json:"id,omitempty"`
+	Username       string    `json:"username,omitempty"`
+	Email          string    `json:"email,omitempty"`
+	Password       string    `json:"password,omitempty"`
+	CreateAt       time.Time `json:"created_at"`
+	Followed       bool      `json:"followed"`
+	FollowingCount int64     `json:"following_count"`
+	FollowerCount  int64     `json:"follower_count"`
 }
 
 type CreateUserParam struct {
